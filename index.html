@@ -2,38 +2,47 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Cat Clicker Pro</title>
+    <title>Cat Clicker Prestige</title>
     <style>
         body { text-align: center; font-family: sans-serif; background: #ffe4e1; }
         .tab { display: none; padding: 20px; }
         .active { display: block; }
         button { padding: 10px 15px; margin: 5px; cursor: pointer; background: #ff69b4; color: white; border: none; border-radius: 8px; }
+        button:disabled { background: #ccc; }
+        .stats { font-size: 20px; color: #d63384; font-weight: bold; }
     </style>
 </head>
 <body>
     <h1>🐾 Cat Clicker Pro 🐾</h1>
-    <div class="counter">Каткойнов: <span id="coins">0</span></div>
+    <div class="stats">Каткойнов: <span id="coins">0</span></div>
+    <div class="stats">Текущий множитель (X): <span id="multDisplay">1</span></div>
+    
     <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" style="width:200px; cursor:pointer">
     
     <div class="tabs">
-        <button onclick="showTab('upgrades')">Улучшения клика</button>
+        <button onclick="showTab('upgrades')">Улучшения</button>
         <button onclick="showTab('auto')">Авто-кликеры</button>
         <button onclick="showTab('special')">Королевский режим</button>
+        <button onclick="showTab('prestige')">Перерождение</button>
     </div>
 
     <div id="upgrades" class="tab active">
         <button onclick="buyClick(1, 10)">+1 к силе (10 🐾)</button>
         <button onclick="buyClick(10, 100)">+10 к силе (100 🐾)</button>
     </div>
-
     <div id="auto" class="tab">
         <button onclick="buyAuto(1, 100)">+1 авто/сек (100 🐾)</button>
-        <button onclick="buyAuto(10, 1000)">+10 авто/сек (1000 🐾)</button>
+        <button onclick="buyAuto(10, 1000)">+1000 🐾</button>
         <button onclick="buyAuto(100, 10000)">+100 авто/сек (10000 🐾)</button>
     </div>
-
     <div id="special" class="tab">
-        <button id="royalBtn" onclick="buyRoyal()">Королевский режим (5000 🐾, 5x множитель, +30 к клику)</button>
+        <button id="royalBtn" onclick="buyRoyal()">Королевский режим (5000 🐾, 5x, +30)</button>
+    </div>
+
+    <div id="prestige" class="tab">
+        <h3>Перерождение</h3>
+        <p>Нужно 100 000 коинов для перерождения</p>
+        <button id="prestigeBtn" onclick="doPrestige()" disabled>Переродиться!</button>
     </div>
 
     <script>
@@ -42,40 +51,43 @@
         let autoCPS = 0;
         let royalMultiplier = 1;
         let royalBonus = 0;
+        let prestigeMult = 1; // Базовый множитель перерождения
+        let prestigeCount = 0;
 
         document.getElementById('cat').onclick = () => {
-            coins += (clickPower + royalBonus) * royalMultiplier;
+            coins += (clickPower + royalBonus) * royalMultiplier * prestigeMult;
             update();
         };
 
-        function buyClick(power, cost) {
-            if (coins >= cost) { coins -= cost; clickPower += power; update(); }
-        }
-
-        function buyAuto(amount, cost) {
-            if (coins >= cost) { coins -= cost; autoCPS += amount; update(); }
-        }
-
+        function buyClick(power, cost) { if (coins >= cost) { coins -= cost; clickPower += power; update(); } }
+        function buyAuto(amount, cost) { if (coins >= cost) { coins -= cost; autoCPS += amount; update(); } }
         function buyRoyal() {
-            if (coins >= 5000) {
-                coins -= 5000;
-                royalMultiplier = 5;
-                royalBonus = 30;
-                document.getElementById('royalBtn').disabled = true;
+            if (coins >= 5000) { coins -= 5000; royalMultiplier = 5; royalBonus = 30; document.getElementById('royalBtn').disabled = true; update(); }
+        }
+
+        function doPrestige() {
+            if (coins >= 100000) {
+                prestigeCount++;
+                // Логика роста множителя: 1.2 -> 1.4 -> 1.5 -> 1.7 -> 2.0 ...
+                const mults = [1.2, 1.4, 1.5, 1.7, 2, 2.2, 2.5, 2.8, 3, 3.5];
+                prestigeMult = mults[prestigeCount - 1] || 4;
+                coins = 0; clickPower = 1; autoCPS = 0; royalMultiplier = 1; royalBonus = 0;
+                document.getElementById('royalBtn').disabled = false;
+                alert("Перерождение №" + prestigeCount + "! Множитель: " + prestigeMult);
                 update();
             }
         }
 
-        function showTab(id) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
+        function showTab(id) { document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+        
         function update() {
             document.getElementById('coins').innerText = Math.floor(coins);
+            document.getElementById('multDisplay').innerText = (royalMultiplier * prestigeMult).toFixed(1);
+            document.getElementById('prestigeBtn').disabled = coins < 100000;
         }
 
         setInterval(() => { coins += autoCPS; update(); }, 1000);
     </script>
 </body>
 </html>
+
