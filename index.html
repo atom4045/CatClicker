@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cat Clicker: God Edition</title>
+    <title>Cat Clicker: God Edition Pro</title>
     <style>
         body { 
             text-align: center; font-family: 'Segoe UI', sans-serif; 
@@ -33,13 +33,24 @@
         .cat-mini { width: 50px; height: 50px; object-fit: contain; animation: bounce 2s infinite ease-in-out; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         
-        /* Эффект дождя */
+        /* Эффект дождя (ГИГАНТСКИЕ КОТЫ) */
         .rain-cat {
-            position: fixed; top: -50px; width: 40px; height: 40px;
+            position: fixed; top: -300px; width: 300px; height: 300px; /* ГИГАНТЫ */
             pointer-events: none; z-index: 5000; animation: fall linear forwards;
+            opacity: 0.8;
         }
         @keyframes fall {
-            to { transform: translateY(110vh) rotate(360deg); }
+            to { transform: translateY(130vh) rotate(180deg); }
+        }
+
+        /* Эффект покупки (ВЗРЫВ КОТОВ) */
+        .buy-particle {
+            position: fixed; width: 30px; height: 30px;
+            pointer-events: none; z-index: 6000; animation: explode 1s ease-out forwards;
+        }
+        @keyframes explode {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
         }
 
         .click-effect { position: absolute; color: #ff1493; font-weight: bold; font-size: 24px; pointer-events: none; animation: flyUp 0.8s forwards; z-index: 9999; }
@@ -100,7 +111,7 @@
         <div style="background: white; padding: 20px; border-radius: 20px; border: 4px solid gold;">
             <h2 style="color: gold; text-shadow: 1px 1px 2px #000;">⚡ ПАНЕЛЬ БОГА ⚡</h2>
             <div class="admin-controls">
-                <button onclick="startCatRain()" style="background: linear-gradient(to bottom, #ff00cc, #333); grid-column: span 2;">🐱 КОШАЧИЙ ДОЖДЬ 🐱</button>
+                <button onclick="startCatRain()" style="background: linear-gradient(to bottom, #ff00cc, #333); grid-column: span 2;">🐱 ГИГАНТСКИЙ ДОЖДЬ 🐱</button>
                 <button onclick="coins += 1000000; update();" style="background: #444;">+1М Коинов</button>
                 <button onclick="prestigeMult += 10; update();" style="background: #444;">+10x Мульт</button>
                 <button onclick="for(let k in prices) prices[k] = 0; update();" style="background: #444;">Шоп 0🐾</button>
@@ -155,21 +166,59 @@
             update();
         };
 
+        // ЭФФЕКТ ВЗРЫВА КОТОВ ПРИ ПОКУПКЕ
+        function createConfirmEffect(cost) {
+            // Количество котов зависит от цены (минимум 3, максимум 30)
+            let count = Math.min(30, Math.max(3, Math.floor(cost / 50)));
+            
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('img');
+                p.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
+                p.className = 'buy-particle';
+                
+                // Центр экрана
+                p.style.left = "50%";
+                p.style.top = "50%";
+                
+                // Случайное направление разлета
+                let tx = (Math.random() - 0.5) * 400 + "px";
+                let ty = (Math.random() - 0.5) * 400 + "px";
+                p.style.setProperty('--tx', tx);
+                p.style.setProperty('--ty', ty);
+                
+                // Случайная задержка
+                p.style.animationDelay = (Math.random() * 0.2) + "s";
+
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 1200); // Удаляем через секунду
+            }
+        }
+
         function buyUpgrade(type, amount, priceKey, growth) {
-            if (coins >= prices[priceKey]) {
-                coins -= prices[priceKey];
+            let cost = prices[priceKey];
+            if (coins >= cost) {
+                coins -= cost;
                 if (type === 'click') clickPower += amount;
                 else autoCPS += amount;
+                
+                // Запускаем эффект разлета котов
+                createConfirmEffect(cost);
+                
                 prices[priceKey] *= growth;
                 update();
             }
         }
 
         function buyRoyal() {
-            if (coins >= 50000) { 
-                coins -= 50000; royalMult = 5; royalBonus = 30; 
+            let cost = 50000;
+            if (coins >= cost) { 
+                coins -= cost; royalMult = 5; royalBonus = 30; 
                 document.getElementById('royalBtn').disabled = true;
                 document.getElementById('royalBtn').innerText = "КОРОЛЬ АКТИВИРОВАН";
+                
+                // Мега-взрыв котов для королевского режима
+                createConfirmEffect(cost);
+                
                 update(); 
             }
         }
@@ -190,23 +239,24 @@
             }
         }
 
-        // КОШАЧИЙ ДОЖДЬ
+        // ГИГАНТСКИЙ КОШАЧИЙ ДОЖДЬ
         function startCatRain() {
             if(isRainActive) return;
             isRainActive = true;
             update();
             
+            // Частота появления гигантов чуть меньше, чтобы не перекрыть всё
             let rainInterval = setInterval(() => {
                 const c = document.createElement('img');
                 c.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
                 c.className = 'rain-cat';
-                c.style.left = Math.random() * 100 + "vw";
-                c.style.duration = (Math.random() * 2 + 1) + "s";
+                c.style.left = (Math.random() * 80) + "vw"; // Чтобы не вылезали за края
+                c.style.animationDuration = (Math.random() * 3 + 2) + "s"; // Разная скорость падения
                 document.body.appendChild(c);
-                setTimeout(() => c.remove(), 3000);
-            }, 100);
+                setTimeout(() => c.remove(), 5000); // Удаляем после пролета
+            }, 300); // Раз в 0.3 секунды падает гигант
 
-            // Бонус пассивных коинов во время дождя
+            // Бонус пассивных коинов во время дождя (5% в сек)
             let bonusInterval = setInterval(() => {
                 coins += (coins * 0.05);
                 update();
@@ -217,8 +267,8 @@
                 clearInterval(bonusInterval);
                 isRainActive = false;
                 update();
-                alert("Дождь закончился, но ты стал богаче!");
-            }, 15000);
+                alert("Гигантский дождь закончился!");
+            }, 15000); // Длится 15 секунд
         }
 
         document.getElementById('secret-paw').onclick = () => {
@@ -258,6 +308,7 @@
     </script>
 </body>
 </html>
+
 
 
 
