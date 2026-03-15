@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cat Clicker: God Edition Ultimate</title>
+    <title>Cat Clicker: Full Restore</title>
     <style>
         body { text-align: center; font-family: 'Segoe UI', sans-serif; background: #1a1a2e; color: white; margin: 0; padding-top: 60px; transition: 0.5s; }
         .admin-bg { animation: rgbBg 5s infinite linear; }
@@ -22,7 +22,7 @@
 <body id="mainBody">
 
     <h1>✨ Cosmic Cat Clicker ✨</h1>
-    <div style="font-size: 26px; color: #00d2ff; text-shadow: 0 0 10px #00d2ff;">🐾 <span id="coinsDisplay">0</span></div>
+    <div style="font-size: 26px; color: #00d2ff;">🐾 <span id="coinsDisplay">0</span></div>
     
     <div id="cat-farm">
         <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" style="width: 160px; cursor: pointer;">
@@ -36,21 +36,24 @@
     </div>
 
     <div id="upgrades" class="tab active">
+        <h3>Клик-апгрейды</h3>
         <button onclick="buyUpgrade('click', 1, 'priceClick1', 1.15)">+1 сила (<span id="priceClick1">10</span>)</button>
+        <button onclick="buyUpgrade('click', 10, 'priceClick10', 1.15)">+10 сила (<span id="priceClick10">100</span>)</button>
+        <button onclick="buyUpgrade('click', 1000, 'priceClick1000', 1.5)">+1000 сила (<span id="priceClick1000">10000</span>)</button>
+        <h3>Авто-апгрейды</h3>
         <button onclick="buyUpgrade('auto', 1, 'priceAuto1', 1.2)">+1/сек (<span id="priceAuto1">100</span>)</button>
+        <button onclick="buyUpgrade('auto', 10, 'priceAuto10', 1.2)">+10/сек (<span id="priceAuto10">1000</span>)</button>
+        <button onclick="buyUpgrade('auto', 100, 'priceAuto100', 1.2)">+100/сек (<span id="priceAuto100">10000</span>)</button>
     </div>
 
     <div id="cosmos" class="tab">
         <h2>Созвездия (нужно 1000 кликов)</h2>
         <button id="btnLazy" onclick="activateConst('lazy')">💤 Ленивый Кот</button>
-        <div class="info-text">Автокликеры приносят в 10 раз больше, но клик дает 0. Баланс смещается в полный AFK режим. Длится 2 минуты.</div>
-        
+        <div class="info-text">Автокликеры приносят в 10 раз больше, но клик дает 0. Длится 2 минуты.</div>
         <button id="btnTygydyk" onclick="activateConst('tygydyk')">🐈 Ночной Тыгыдык</button>
-        <div class="info-text">Сила клика растет каждую секунду, пока ты НЕ кликаешь. Копи силу для мощного удара. Длится 2 минуты.</div>
-        
+        <div class="info-text">Сила клика растет каждую секунду, пока ты НЕ кликаешь. Длится 2 минуты.</div>
         <button id="btnLucky" onclick="activateConst('lucky')">🍀 Кот Удачи</button>
         <div class="info-text">Шанс критического удара (x50) повышен до 20% на 2 минуты.</div>
-        
         <div id="activeTimer" style="color: #ff4757; font-weight: bold; margin-top: 15px;"></div>
     </div>
 
@@ -60,7 +63,7 @@
 
     <div id="admin" class="tab">
         <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 2px solid gold;">
-            <h2 style="color: gold; text-shadow: 1px 1px 2px black;">⚡ ПАНЕЛЬ БОГА ⚡</h2>
+            <h2 style="color: gold;">⚡ ПАНЕЛЬ БОГА ⚡</h2>
             <div class="admin-controls">
                 <button onclick="coins += 1000000; update();">+1М Коинов</button>
                 <button onclick="prestigeMult *= 100; update();" style="background: #e67e22;">x100 Мульти</button>
@@ -75,7 +78,8 @@
 
     <script>
         let coins = 0; let clickPower = 1; let autoCPS = 0; let prestigeMult = 1; let starEnergy = 0;
-        let activeConst = null; let constTime = 0; let prices = { priceClick1: 10, priceAuto1: 100 };
+        let activeConst = null; let constTime = 0; 
+        let prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
 
         function update() {
             document.getElementById('coinsDisplay').innerText = Math.floor(coins);
@@ -149,5 +153,6 @@
     </script>
 </body>
 </html>
+
 
 
