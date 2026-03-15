@@ -2,82 +2,87 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Cat Clicker Evolution</title>
+    <title>Cat Clicker Prestige</title>
     <style>
-        body { text-align: center; font-family: 'Arial', sans-serif; background: #ffe4e1; }
-        #cat { width: 250px; cursor: pointer; margin-top: 20px; transition: 0.2s; }
-        #cat:hover { transform: scale(1.05); }
-        .counter { font-size: 32px; font-weight: bold; color: #d63384; }
-        .shop { margin-top: 30px; border-top: 2px solid #ccc; padding-top: 20px; }
-        button { display: block; margin: 10px auto; padding: 10px 20px; font-size: 16px; cursor: pointer; background: #ff69b4; border: none; border-radius: 10px; color: white; }
+        body { text-align: center; font-family: sans-serif; background: #ffe4e1; }
+        .tab-content { display: none; padding: 20px; }
+        .active { display: block; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        #admin-panel { display: none; background: #ffcccc; padding: 10px; margin-top: 20px; }
     </style>
 </head>
 <body>
     <h1>🐾 Cat Clicker Evolution 🐾</h1>
     <div class="counter">Каткойнов: <span id="coins">0</span></div>
-    <p>Всего кликов: <span id="totalClicks">0</span></p>
-    <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" alt="Кот">
-    <p>Доход: <span id="cps">0</span> в секунду</p>
-    
-    <div class="shop">
-        <button id="upg1">Авто-клик (10 🐾, +1/сек)</button>
-        <button id="upg2">Бизнес-кот (100 🐾, +10/сек)</button>
-        <button id="upg3">Королевский кот (1000 🐾, x30 за клик)</button>
+    <p>Множитель клика: <span id="mult">1</span></p>
+
+    <div id="game-area">
+        <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" style="width:200px; cursor:pointer">
+    </div>
+
+    <div class="tabs">
+        <button onclick="showTab('shop')">Магазин</button>
+        <button onclick="showTab('prestige')">Перерождение</button>
+    </div>
+
+    <div id="shop" class="tab-content active">
+        <h3>Магазин</h3>
+        <button onclick="buyClickUpgrade()">+1 к силе клика (10 🐾)</button>
+        <button onclick="buyAutoClicker()">Авто-кликер (50 🐾)</button>
+    </div>
+
+    <div id="prestige" class="tab-content">
+        <h3>Перерождение</h3>
+        <button id="prestige-btn" onclick="doPrestige()" disabled>Переродиться (100к коинов)</button>
+        <p>Уровень перерождения: <span id="prestige-lvl">0</span></p>
+    </div>
+
+    <div id="admin-panel">
+        <h3>Админ-панель</h3>
+        <input type="number" id="admin-coins" placeholder="Коины">
+        <button onclick="applyAdmin()">Применить</button>
     </div>
 
     <script>
         let coins = 0;
-        let totalClicks = 0;
-        let cps = 0;
-        let clickValue = 1; 
-        const coinsEl = document.getElementById('coins');
-        const totalEl = document.getElementById('totalClicks');
-        const cpsEl = document.getElementById('cps');
-        const catImg = document.getElementById('cat');
+        let clickPower = 1;
+        let prestigeLvl = 0;
+        let multipliers = [1, 1.2, 1.4, 1.5, 1.7, 2, 2.2, 2.5, 2.8, 3];
 
-        const catImages = [
-            "https://cdn-icons-png.flaticon.com/512/616/616430.png",
-            "https://cdn-icons-png.flaticon.com/512/616/616489.png",
-            "https://cdn-icons-png.flaticon.com/512/2809/2809828.png",
-            "https://cdn-icons-png.flaticon.com/512/3069/3069176.png",
-            "https://cdn-icons-png.flaticon.com/512/1998/1998619.png",
-            "https://cdn-icons-png.flaticon.com/512/2299/2299323.png",
-            "https://cdn-icons-png.flaticon.com/512/1864/1864509.png",
-            "https://cdn-icons-png.flaticon.com/512/2553/2553642.png",
-            "https://cdn-icons-png.flaticon.com/512/4047/4047321.png",
-            "https://cdn-icons-png.flaticon.com/512/763/763742.png"
-        ];
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
 
         document.getElementById('cat').onclick = () => {
-            coins += clickValue;
-            totalClicks++;
-            coinsEl.innerText = Math.floor(coins);
-            totalEl.innerText = totalClicks;
-            
-            let level = Math.floor(totalClicks / 10000);
-            if (level < catImages.length) catImg.src = catImages[level];
+            coins += (clickPower * multipliers[prestigeLvl]);
+            update();
         };
 
-        document.getElementById('upg1').onclick = () => {
-            if (coins >= 10) { coins -= 10; cps += 1; coinsEl.innerText = Math.floor(coins); cpsEl.innerText = cps; }
-        };
-        document.getElementById('upg2').onclick = () => {
-            if (coins >= 100) { coins -= 100; cps += 10; coinsEl.innerText = Math.floor(coins); cpsEl.innerText = cps; }
-        };
-        document.getElementById('upg3').onclick = () => {
-            if (coins >= 1000) { 
-                coins -= 1000; 
-                clickValue = 30; 
-                coinsEl.innerText = Math.floor(coins);
-                document.getElementById('upg3').disabled = true;
-                alert("Королевский кот активирован! Теперь клик дает 30!");
+        function buyClickUpgrade() {
+            if (coins >= 10) { coins -= 10; clickPower++; update(); }
+        }
+
+        function doPrestige() {
+            if (coins >= 100000 && prestigeLvl < 10) {
+                coins = 0;
+                prestigeLvl++;
+                if (prestigeLvl >= 10) document.getElementById('admin-panel').style.display = 'block';
+                update();
             }
-        };
+        }
 
-        setInterval(() => { 
-            coins += (cps / 10); // Добавляем доход 10 раз в секунду для плавности
-            coinsEl.innerText = Math.floor(coins); 
-        }, 100);
+        function update() {
+            document.getElementById('coins').innerText = Math.floor(coins);
+            document.getElementById('mult').innerText = multipliers[prestigeLvl];
+            document.getElementById('prestige-lvl').innerText = prestigeLvl;
+            document.getElementById('prestige-btn').disabled = coins < 100000;
+        }
+
+        function applyAdmin() {
+            coins = parseInt(document.getElementById('admin-coins').value);
+            update();
+        }
     </script>
 </body>
 </html>
