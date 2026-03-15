@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cat Clicker Pro Balance</title>
+    <title>Cat Clicker Pro Evolution</title>
     <style>
         body { 
             text-align: center; font-family: 'Segoe UI', sans-serif; 
@@ -23,12 +23,12 @@
         button:active { transform: scale(0.95); }
         button:disabled { background: #ccc; cursor: not-allowed; }
         .stats { font-size: 24px; color: #d63384; margin: 10px; font-weight: bold; }
-        #cat-farm { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin: 20px auto; min-height: 200px; }
+        #cat-farm { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin: 20px auto; min-height: 200px; align-items: center; }
         #cat { width: 180px; cursor: pointer; touch-action: manipulation; -webkit-user-select: none; user-select: none; transition: transform 0.1s; }
         #cat:active { transform: scale(0.9); }
         .cat-mini { width: 50px; height: 50px; object-fit: contain; animation: bounce 2s infinite ease-in-out; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .click-effect { position: absolute; color: #ff1493; font-weight: bold; font-size: 24px; pointer-events: none; animation: flyUp 0.8s forwards; z-index: 9999; }
+        .click-effect { position: absolute; color: #ff1493; font-weight: bold; font-size: 24px; pointer-events: none; animation: flyUp 0.8s opacity 0.8s forwards; z-index: 9999; }
         @keyframes flyUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
         #admin-panel { display: none; background: #ffcccc; padding: 15px; border: 2px solid red; margin: 20px; border-radius: 15px; }
     </style>
@@ -50,21 +50,21 @@
     
     <div class="tabs">
         <button onclick="showTab('upgrades')">Клики</button>
-        <button onclick="showTab('auto')">Авто</button>
+        <button onclick="autoTab()">Авто</button>
         <button onclick="showTab('special')">Королевский</button>
         <button onclick="showTab('prestige')">Перерождение</button>
     </div>
 
     <div id="upgrades" class="tab active">
-        <button id="btnClick1" onclick="buyUpgrade('click', 1, 'priceClick1')">+1 сила (<span id="priceClick1">10</span> 🐾)</button>
-        <button id="btnClick10" onclick="buyUpgrade('click', 10, 'priceClick10')">+10 сила (<span id="priceClick10">100</span> 🐾)</button>
-        <button id="btnClick1000" onclick="buyUpgrade('click', 1000, 'priceClick1000')">+1000 сила (<span id="priceClick1000">10000</span> 🐾)</button>
+        <button onclick="buyUpgrade('click', 1, 'priceClick1', 1.15)">+1 сила (<span id="priceClick1">10</span> 🐾)</button>
+        <button onclick="buyUpgrade('click', 10, 'priceClick10', 1.15)">+10 сила (<span id="priceClick10">100</span> 🐾)</button>
+        <button onclick="buyUpgrade('click', 1000, 'priceClick1000', 1.5)">+1000 сила (<span id="priceClick1000">10000</span> 🐾)</button>
     </div>
     
     <div id="auto" class="tab">
-        <button id="btnAuto1" onclick="buyUpgrade('auto', 1, 'priceAuto1')">+1/сек (<span id="priceAuto1">100</span> 🐾)</button>
-        <button id="btnAuto10" onclick="buyUpgrade('auto', 10, 'priceAuto10')">+10/сек (<span id="priceAuto10">1000</span> 🐾)</button>
-        <button id="btnAuto100" onclick="buyUpgrade('auto', 100, 'priceAuto100')">+100/сек (<span id="priceAuto100">10000</span> 🐾)</button>
+        <button onclick="buyUpgrade('auto', 1, 'priceAuto1', 1.2)">+1/сек (<span id="priceAuto1">100</span> 🐾)</button>
+        <button onclick="buyUpgrade('auto', 10, 'priceAuto10', 1.2)">+10/сек (<span id="priceAuto10">1000</span> 🐾)</button>
+        <button onclick="buyUpgrade('auto', 100, 'priceAuto100', 1.2)">+100/сек (<span id="priceAuto100">10000</span> 🐾)</button>
     </div>
     
     <div id="special" class="tab">
@@ -91,13 +91,10 @@
         let prestigeMult = 1;
         let prestigeCount = 0;
 
-        // Объект с ценами
         let prices = {
             priceClick1: 10, priceClick10: 100, priceClick1000: 10000,
             priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000
         };
-
-        const catMain = document.getElementById('cat');
 
         function update() {
             document.getElementById('coins').innerText = Math.floor(coins);
@@ -106,21 +103,21 @@
             document.getElementById('cpsDisplay').innerText = autoCPS;
             document.getElementById('prestigeBtn').disabled = coins < 100000;
             
-            // Обновляем цены в интерфейсе
             for (let key in prices) {
-                document.getElementById(key).innerText = Math.floor(prices[key]);
+                let el = document.getElementById(key);
+                if(el) el.innerText = Math.floor(prices[key]);
             }
             
             if (totalLifetime >= 1000000) document.getElementById('admin-panel').style.display = 'block';
         }
 
-        catMain.addEventListener('click', (e) => {
+        document.getElementById('cat').onclick = (e) => {
             let gain = (clickPower + royalBonus) * royalMult * prestigeMult;
             coins += gain;
             totalLifetime += gain;
             createClickEffect(e.pageX, e.pageY, "+" + Math.floor(gain));
             update();
-        });
+        };
 
         function createClickEffect(x, y, text) {
             const effect = document.createElement('div');
@@ -132,16 +129,13 @@
             setTimeout(() => effect.remove(), 800);
         }
 
-        // Универсальная функция покупки с ростом цены
-        function buyUpgrade(type, amount, priceKey) {
+        function buyUpgrade(type, amount, priceKey, growth) {
             let cost = prices[priceKey];
             if (coins >= cost) {
                 coins -= cost;
                 if (type === 'click') clickPower += amount;
                 if (type === 'auto') autoCPS += amount;
-                
-                // Рост цены на 15%
-                prices[priceKey] = Math.ceil(prices[priceKey] * 1.15);
+                prices[priceKey] = Math.ceil(prices[priceKey] * growth);
                 update();
             }
         }
@@ -158,7 +152,6 @@
                 prestigeCount++;
                 prestigeMult += 0.5;
                 coins = 0; clickPower = 1; autoCPS = 0; royalMult = 1; royalBonus = 0;
-                // Сброс цен (по желанию можно оставить, но обычно сбрасывают)
                 prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
                 document.getElementById('royalBtn').disabled = false;
                 const miniCat = document.createElement('img');
@@ -166,7 +159,6 @@
                 miniCat.className = "cat-mini";
                 document.getElementById('cat-farm').appendChild(miniCat);
                 update();
-                alert("Перерождение! Мир сброшен, множитель вырос!");
             }
         }
 
@@ -179,12 +171,15 @@
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
+        
+        function autoTab() { showTab('auto'); }
 
         setInterval(() => { coins += autoCPS; totalLifetime += autoCPS; update(); }, 1000);
-        update(); // Первый запуск
+        update();
     </script>
 </body>
 </html>
+
 
 
 
