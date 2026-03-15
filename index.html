@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Cat Clicker Pro</title>
+    <title>Cat Clicker Evolution</title>
     <style>
         body { text-align: center; font-family: 'Arial', sans-serif; background: #ffe4e1; }
         #cat { width: 250px; cursor: pointer; margin-top: 20px; transition: 0.2s; }
@@ -10,30 +10,44 @@
         .counter { font-size: 32px; font-weight: bold; color: #d63384; }
         .shop { margin-top: 30px; border-top: 2px solid #ccc; padding-top: 20px; }
         button { display: block; margin: 10px auto; padding: 10px 20px; font-size: 16px; cursor: pointer; background: #ff69b4; border: none; border-radius: 10px; color: white; }
-        #crown { display: none; font-size: 50px; }
     </style>
 </head>
 <body>
-    <h1>🐾 Cat Clicker Pro 🐾</h1>
-    <div id="crown">👑</div>
+    <h1>🐾 Cat Clicker Evolution 🐾</h1>
     <div class="counter">Каткойнов: <span id="coins">0</span></div>
+    <p>Всего кликов: <span id="totalClicks">0</span></p>
     <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" alt="Кот">
     <p>Доход: <span id="cps">0</span> в секунду</p>
     
     <div class="shop">
         <button id="upg1">Авто-клик (10 🐾)</button>
         <button id="upg2">Бизнес-кот (100 🐾, +10/сек)</button>
-        <button id="upg3">Королевский кот (1000 🐾, +30 за клик)</button>
+        <button id="upg3">Королевский кот (1000 🐾, x30 к клику)</button>
     </div>
 
     <script>
         let coins = 0;
+        let totalClicks = 0;
         let cps = 0;
-        let clickValue = 1; // Изначально 1 за клик
+        let clickValue = 1;
         const coinsEl = document.getElementById('coins');
+        const totalEl = document.getElementById('totalClicks');
         const cpsEl = document.getElementById('cps');
+        const catImg = document.getElementById('cat');
 
-        document.getElementById('cat').onclick = () => { coins += clickValue; coinsEl.innerText = coins; };
+        function updateCat() {
+            if (totalClicks >= 30000) catImg.src = "https://cdn-icons-png.flaticon.com/512/3069/3069176.png"; // Уровень 4
+            else if (totalClicks >= 20000) catImg.src = "https://cdn-icons-png.flaticon.com/512/2809/2809828.png"; // Уровень 3
+            else if (totalClicks >= 10000) catImg.src = "https://cdn-icons-png.flaticon.com/512/616/616489.png"; // Уровень 2
+        }
+
+        document.getElementById('cat').onclick = () => {
+            coins += clickValue;
+            totalClicks++;
+            coinsEl.innerText = coins;
+            totalEl.innerText = totalClicks;
+            updateCat();
+        };
 
         document.getElementById('upg1').onclick = () => {
             if (coins >= 10) { coins -= 10; cps += 1; coinsEl.innerText = coins; cpsEl.innerText = cps; }
@@ -44,10 +58,10 @@
         document.getElementById('upg3').onclick = () => {
             if (coins >= 1000) { 
                 coins -= 1000; 
-                clickValue = 30; // Теперь за клик дают 30
+                clickValue = 30; 
                 coinsEl.innerText = coins;
-                document.getElementById('crown').style.display = 'block';
-                document.getElementById('upg3').disabled = true; // Отключаем кнопку после покупки
+                document.getElementById('upg3').disabled = true;
+                alert("Кот стал королевским! Клик теперь дает 30!");
             }
         };
 
@@ -55,5 +69,6 @@
     </script>
 </body>
 </html>
+
 
 
