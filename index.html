@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cat Clicker Ultimate Pro</title>
+    <title>Cat Clicker Ultimate Fix</title>
     <style>
         body { 
             text-align: center; font-family: 'Segoe UI', sans-serif; 
@@ -34,11 +34,15 @@
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         .click-effect { position: absolute; color: #ff1493; font-weight: bold; font-size: 24px; pointer-events: none; animation: flyUp 0.8s forwards; z-index: 9999; }
         @keyframes flyUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
+        
+        /* Кнопки меню */
+        .tabs-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
+
+        /* Секретка */
         #secret-paw { position: fixed; bottom: 10px; left: 10px; width: 30px; opacity: 0.2; cursor: pointer; z-index: 2000; }
         #puzzle-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; justify-content: center; align-items: center; }
         #puzzle-container { background: white; padding: 20px; border-radius: 20px; text-align: center; }
         .color-btn { width: 45px; height: 45px; border-radius: 8px; margin: 5px; cursor: pointer; display: inline-block; border: 1px solid #000; }
-        .admin-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
     </style>
 </head>
 <body id="mainBody">
@@ -49,19 +53,18 @@
     </div>
 
     <h1>🐾 Cat Clicker Pro 🐾</h1>
-    <div class="stats">Коины: <span id="coins">0</span></div>
-    <div style="font-size: 12px; color: #888;">Всего за всё время: <span id="totalLifetime">0</span></div>
+    <div class="stats">Коины: <span id="coinsDisplay">0</span></div>
     
     <div id="cat-farm">
         <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" alt="Кот">
     </div>
     
-    <div class="tabs">
+    <div class="tabs-menu">
         <button onclick="showTab('upgrades')">Клики</button>
         <button onclick="showTab('auto')">Авто</button>
-        <button onclick="showTab('special')">Королевский</button>
-        <button onclick="showTab('prestige')">Перерождение</button>
-        <button id="adminTabBtn" onclick="showTab('admin')" style="display:none; background: #333;">🛠 АДМИН</button>
+        <button onclick="showTab('special')">👑 Король</button>
+        <button onclick="showTab('prestige')">⭐ Ребёрт</button>
+        <button id="adminTabBtn" onclick="showTab('admin')" style="display:none; background: #333;">🛠 Админ</button>
     </div>
 
     <div id="upgrades" class="tab active">
@@ -77,7 +80,9 @@
     </div>
     
     <div id="special" class="tab">
-        <button id="royalBtn" onclick="buyRoyal()">Королевский режим (50к 🐾, 5x, +30 к клику)</button>
+        <h3>Королевский режим 👑</h3>
+        <p>Дает множитель x5 и +30 к силе клика навсегда (до перерождения)</p>
+        <button id="royalBtn" onclick="buyRoyal()">Купить за 50,000 🐾</button>
     </div>
     
     <div id="prestige" class="tab">
@@ -87,14 +92,10 @@
     <div id="admin" class="tab">
         <div style="background: white; padding: 20px; border-radius: 20px; border: 3px dashed #333;">
             <h3>Панель Бога ⚡</h3>
-            <div class="admin-controls">
-                <button onclick="prestigeCount += 5; prestigeMult += 2.5; update();">+5 Перерожд.</button>
-                <button onclick="coins += 1000000; totalLifetime += 1000000; update();">+1М Коинов</button>
-                <button onclick="for(let k in prices) prices[k] = 0; update();">Бесплатный шоп</button>
-                <button onclick="document.getElementById('mainBody').classList.toggle('admin-bg');">RGB Фон</button>
-                <button onclick="document.getElementById('cat').style.width = '300px';">Большой кот</button>
-                <button onclick="document.getElementById('cat').style.width = '100px';">Малый кот</button>
-            </div>
+            <button onclick="coins += 1000000; update();">+1М Коинов</button>
+            <button onclick="prestigeMult += 5; update();">+5x Множитель</button>
+            <button onclick="for(let k in prices) prices[k] = 0; update();">Бесплатный шоп</button>
+            <button onclick="document.getElementById('mainBody').classList.toggle('admin-bg');">RGB Фон</button>
         </div>
     </div>
 
@@ -102,17 +103,19 @@
 
     <div id="puzzle-overlay">
         <div id="puzzle-container">
-            <h3>Введи цветовой код</h3>
+            <h3>Цветовой код</h3>
             <div id="puzzle-btns"></div>
             <button onclick="document.getElementById('puzzle-overlay').style.display='none'">Отмена</button>
         </div>
     </div>
 
     <script>
-        let coins = 0; let totalLifetime = 0;
-        let clickPower = 1; let autoCPS = 0;
-        let royalMult = 1; let royalBonus = 0;
-        let prestigeMult = 1; let prestigeCount = 0;
+        let coins = 0;
+        let clickPower = 1;
+        let autoCPS = 0;
+        let royalMult = 1;
+        let royalBonus = 0;
+        let prestigeMult = 1;
         let prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
         
         const puzzleCorrect = ['red', 'blue', 'purple'];
@@ -120,8 +123,7 @@
         const colorPalette = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'pink', 'cyan', 'lime', 'brown'];
 
         function update() {
-            document.getElementById('coins').innerText = Math.floor(coins);
-            document.getElementById('totalLifetime').innerText = Math.floor(totalLifetime);
+            document.getElementById('coinsDisplay').innerText = Math.floor(coins);
             document.getElementById('totalMult').innerText = (royalMult * prestigeMult).toFixed(1);
             document.getElementById('cpsDisplay').innerText = autoCPS;
             document.getElementById('prestigeBtn').disabled = coins < 100000;
@@ -130,7 +132,8 @@
 
         document.getElementById('cat').onclick = (e) => {
             let gain = (clickPower + royalBonus) * royalMult * prestigeMult;
-            coins += gain; totalLifetime += gain;
+            coins += gain;
+            
             const effect = document.createElement('div');
             effect.className = 'click-effect';
             effect.style.left = e.pageX + 'px'; effect.style.top = e.pageY + 'px';
@@ -153,16 +156,19 @@
         function buyRoyal() {
             if (coins >= 50000) { 
                 coins -= 50000; royalMult = 5; royalBonus = 30; 
-                document.getElementById('royalBtn').disabled = true; update(); 
+                document.getElementById('royalBtn').disabled = true;
+                document.getElementById('royalBtn').innerText = "АКТИВИРОВАНО";
+                update(); 
             }
         }
 
         function doPrestige() {
             if (coins >= 100000) {
                 coins = 0; clickPower = 1; autoCPS = 0; royalMult = 1; royalBonus = 0;
-                prestigeMult += 0.5; prestigeCount++;
+                prestigeMult += 0.5;
                 prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
                 document.getElementById('royalBtn').disabled = false;
+                document.getElementById('royalBtn').innerText = "Купить за 50,000 🐾";
                 const mini = document.createElement('img');
                 mini.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
                 mini.className = "cat-mini";
@@ -198,11 +204,12 @@
             document.getElementById(id).classList.add('active');
         }
 
-        setInterval(() => { coins += autoCPS; totalLifetime += autoCPS; update(); }, 1000);
+        setInterval(() => { coins += autoCPS; update(); }, 1000);
         update();
     </script>
 </body>
 </html>
+
 
 
 
