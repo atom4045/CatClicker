@@ -2,26 +2,106 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Cat Clicker Evolution</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cat Clicker Pro Evolution</title>
     <style>
-        body { text-align: center; font-family: sans-serif; background: #ffe4e1; }
+        body { 
+            text-align: center; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #ffe4e1; 
+            overflow-x: hidden;
+            margin: 0;
+            padding-top: 60px;
+        }
+        
+        /* Статистика в углу */
+        #top-stats {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 15px;
+            text-align: right;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .stat-line { font-size: 14px; color: #d63384; font-weight: bold; }
+
         .tab { display: none; padding: 20px; }
         .active { display: block; }
-        button { padding: 12px 20px; margin: 8px; cursor: pointer; background: #ff69b4; color: white; border: none; border-radius: 10px; font-weight: bold; }
+        
+        button { 
+            padding: 12px 20px; margin: 8px; cursor: pointer; 
+            background: #ff69b4; color: white; border: none; 
+            border-radius: 10px; font-weight: bold; transition: 0.2s;
+        }
+        button:active { transform: scale(0.95); }
         button:disabled { background: #ccc; }
-        .stats { font-size: 20px; color: #d63384; margin: 5px; }
-        #cat-farm { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
-        .cat-icon { width: 80px; }
-        #admin-panel { display: none; background: #ffcccc; padding: 15px; border: 2px solid red; margin: 20px; }
+
+        .stats { font-size: 24px; color: #d63384; margin: 10px; font-weight: bold; }
+        
+        /* Ферма котиков */
+        #cat-farm { 
+            display: flex; flex-wrap: wrap; justify-content: center; 
+            gap: 15px; margin: 20px auto; max-width: 90%;
+        }
+        
+        #cat { 
+            width: 180px; 
+            cursor: pointer; 
+            touch-action: manipulation; 
+            -webkit-user-select: none;
+            user-select: none;
+            transition: transform 0.1s;
+        }
+        #cat:active { transform: scale(0.9); }
+
+        /* Маленькие котики (не сплюснутые) */
+        .cat-mini { 
+            width: 50px; 
+            height: 50px; 
+            object-fit: contain; 
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Эффект клика */
+        .click-effect {
+            position: absolute;
+            color: #ff1493;
+            font-weight: bold;
+            font-size: 24px;
+            pointer-events: none;
+            animation: flyUp 0.8s forwards;
+            z-index: 9999;
+        }
+
+        @keyframes flyUp {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-100px); }
+        }
+
+        #admin-panel { display: none; background: #ffcccc; padding: 15px; border: 2px solid red; margin: 20px; border-radius: 15px; }
     </style>
 </head>
 <body>
+
+    <div id="top-stats">
+        <div class="stat-line">Множитель: x<span id="multDisplay">1.0</span></div>
+        <div class="stat-line">Доход: <span id="cpsDisplay">0</span>/сек</div>
+    </div>
+
     <h1>🐾 Cat Clicker Pro 🐾</h1>
     <div class="stats">Каткойнов: <span id="coins">0</span></div>
-    <div class="stats">Всего накоплено: <span id="totalLifetime">0</span></div>
+    <div style="font-size: 14px; color: #888;">Всего накоплено: <span id="totalLifetime">0</span></div>
     
     <div id="cat-farm">
-        <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" style="width:200px; cursor:pointer">
+        <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" alt="Кот">
     </div>
     
     <div class="tabs">
@@ -41,16 +121,16 @@
         <button onclick="buyAuto(100, 10000)">+100/сек (10000 🐾)</button>
     </div>
     <div id="special" class="tab">
-        <button id="royalBtn" onclick="buyRoyal()">Королевский режим (50 000 🐾, 5x, +30 клик)</button>
+        <button id="royalBtn" onclick="buyRoyal()">Королевский режим (50к 🐾, 5x, +30 сила)</button>
     </div>
     <div id="prestige" class="tab">
-        <button id="prestigeBtn" onclick="doPrestige()" disabled>Перерождение (100 000 🐾)</button>
+        <button id="prestigeBtn" onclick="doPrestige()" disabled>Перерождение (100к 🐾)</button>
     </div>
 
     <div id="admin-panel">
-        <h3>Админ-панель</h3>
-        <input type="number" id="cheatCoins" placeholder="Кол-во коинов">
-        <button onclick="cheat()">Начислить</button>
+        <h3>Админ-панель 🛠️</h3>
+        <input type="number" id="cheatCoins" placeholder="Сумма" style="padding: 5px;">
+        <button onclick="cheat()">Добавить</button>
     </div>
 
     <script>
@@ -63,54 +143,88 @@
         let prestigeMult = 1;
         let prestigeCount = 0;
 
+        const catMain = document.getElementById('cat');
+
         function update() {
             document.getElementById('coins').innerText = Math.floor(coins);
             document.getElementById('totalLifetime').innerText = Math.floor(totalLifetime);
+            document.getElementById('multDisplay').innerText = (royalMult * prestigeMult).toFixed(1);
+            document.getElementById('cpsDisplay').innerText = autoCPS;
             document.getElementById('prestigeBtn').disabled = coins < 100000;
+            
             if (totalLifetime >= 1000000) document.getElementById('admin-panel').style.display = 'block';
         }
 
-        document.getElementById('cat').onclick = () => {
+        catMain.addEventListener('click', (e) => {
             let gain = (clickPower + royalBonus) * royalMult * prestigeMult;
             coins += gain;
             totalLifetime += gain;
+            
+            // Эффект клика
+            createClickEffect(e.pageX, e.pageY, "+" + Math.floor(gain));
             update();
-        };
+        });
+
+        function createClickEffect(x, y, text) {
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
+            effect.style.left = (x - 10) + 'px';
+            effect.style.top = (y - 20) + 'px';
+            effect.innerText = text;
+            document.body.appendChild(effect);
+            setTimeout(() => effect.remove(), 800);
+        }
 
         function buyClick(p, c) { if (coins >= c) { coins -= c; clickPower += p; update(); } }
         function buyAuto(a, c) { if (coins >= c) { coins -= c; autoCPS += a; update(); } }
+        
         function buyRoyal() {
-            if (coins >= 50000) { coins -= 50000; royalMult = 5; royalBonus = 30; document.getElementById('royalBtn').disabled = true; update(); }
+            if (coins >= 50000) { 
+                coins -= 50000; 
+                royalMult = 5; 
+                royalBonus = 30; 
+                document.getElementById('royalBtn').disabled = true; 
+                update(); 
+            }
         }
 
         function doPrestige() {
             if (coins >= 100000) {
                 prestigeCount++;
-                prestigeMult += 0.5; // Увеличиваем множитель за каждое перерождение
+                prestigeMult += 0.5;
                 coins = 0; clickPower = 1; autoCPS = 0; royalMult = 1; royalBonus = 0;
                 document.getElementById('royalBtn').disabled = false;
                 
-                // Добавляем котика
-                let img = document.createElement('img');
-                img.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
-                img.className = "cat-icon";
-                document.getElementById('cat-farm').appendChild(img);
+                // Добавляем маленького котика (не сплюснутого)
+                const miniCat = document.createElement('img');
+                miniCat.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
+                miniCat.className = "cat-mini";
+                document.getElementById('cat-farm').appendChild(miniCat);
                 
                 update();
+                alert("Перерождение совершено! Множитель вырос!");
             }
         }
 
         function cheat() {
-            coins += parseInt(document.getElementById('cheatCoins').value);
-            update();
+            let val = parseInt(document.getElementById('cheatCoins').value);
+            if (!isNaN(val)) { coins += val; totalLifetime += val; update(); }
         }
 
-        function showTab(id) { document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-        setInterval(() => { coins += autoCPS; totalLifetime += autoCPS; update(); }, 1000);
+        function showTab(id) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        setInterval(() => { 
+            coins += autoCPS; 
+            totalLifetime += autoCPS; 
+            update(); 
+        }, 1000);
     </script>
 </body>
 </html>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 
 
 
