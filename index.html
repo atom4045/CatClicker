@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Cat Clicker</title>
+    <style>
+        body { text-align: center; font-family: sans-serif; background: #f0f0f0; }
+        #cat { width: 200px; cursor: pointer; transition: transform 0.1s; }
+        #cat:active { transform: scale(0.95); }
+        .stats { font-size: 24px; margin: 20px; }
+        button { padding: 10px 20px; font-size: 18px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Кошачий кликер</h1>
+    <div class="stats">Каткойны: <span id="coins">0</span> 🐾</div>
+    <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" alt="Кот">
+    <p>Клик в секунду: <span id="cps">0</span></p>
+    <button id="upgrade">Улучшение (10 🐾)</button>
+
+    <script>
+        let coins = 0;
+        let cps = 0;
+        const cat = document.getElementById('cat');
+        const coinsEl = document.getElementById('coins');
+        const cpsEl = document.getElementById('cps');
+        const upgradeBtn = document.getElementById('upgrade');
+
+        cat.onclick = () => { coins++; coinsEl.innerText = coins; };
+
+        upgradeBtn.onclick = () => {
+            if (coins >= 10) {
+                coins -= 10;
+                cps++;
+                coinsEl.innerText = coins;
+                cpsEl.innerText = cps;
+            } else { alert("Недостаточно каткойнов!"); }
+        };
+
+        setInterval(() => {
+            coins += cps;
+            coinsEl.innerText = coins;
+        }, 1000);
+    </script>
+</body>
+</html>
