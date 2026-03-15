@@ -8,13 +8,14 @@
         body { 
             text-align: center; font-family: 'Segoe UI', sans-serif; 
             background: #ffe4e1; margin: 0; padding-top: 60px; overflow-x: hidden;
+            position: relative; min-height: 100vh;
         }
         #top-stats {
             position: fixed; top: 10px; right: 10px; background: rgba(255, 255, 255, 0.9);
             padding: 10px; border-radius: 15px; text-align: right; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000;
         }
         .stat-line { font-size: 14px; color: #d63384; font-weight: bold; }
-        .tab { display: none; padding: 20px; }
+        .tab { display: none; padding: 20px; padding-bottom: 80px; }
         .active { display: block; }
         button { 
             padding: 12px 20px; margin: 8px; cursor: pointer; background: #ff69b4; 
@@ -28,9 +29,50 @@
         #cat:active { transform: scale(0.9); }
         .cat-mini { width: 50px; height: 50px; object-fit: contain; animation: bounce 2s infinite ease-in-out; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .click-effect { position: absolute; color: #ff1493; font-weight: bold; font-size: 24px; pointer-events: none; animation: flyUp 0.8s opacity 0.8s forwards; z-index: 9999; }
+        .click-effect { position: absolute; color: #ff1493; font-weight: bold; font-size: 24px; pointer-events: none; animation: flyUp 0.8s forwards; z-index: 9999; }
         @keyframes flyUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
-        #admin-panel { display: none; background: #ffcccc; padding: 15px; border: 2px solid red; margin: 20px; border-radius: 15px; }
+        
+        /* Секретная лапка */
+        #secret-paw {
+            position: fixed; bottom: 10px; left: 10px;
+            width: 30px; height: 30px; cursor: pointer;
+            opacity: 0.3; transition: 0.3s; z-index: 2000;
+        }
+        #secret-paw:hover { opacity: 1; }
+
+        /* Головоломка */
+        #puzzle-overlay {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+            z-index: 3000; justify-content: center; align-items: center;
+        }
+        #puzzle-container {
+            background: white; padding: 20px; border-radius: 20px;
+            text-align: center; max-width: 300px;
+        }
+        .color-btn {
+            width: 50px; height: 50px; border-radius: 10px; border: 2px solid #333;
+            margin: 5px; cursor: pointer; display: inline-block;
+        }
+
+        /* Цвета */
+        .c-red { background: red; }
+        .c-blue { background: blue; }
+        .c-purple { background: purple; }
+        .c-green { background: green; }
+        .c-yellow { background: yellow; }
+        .c-orange { background: orange; }
+        .c-pink { background: pink; }
+        .c-cyan { background: cyan; }
+        .c-lime { background: lime; }
+        .c-brown { background: brown; }
+
+        /* Админ-комната */
+        #admin-panel { 
+            display: none; background: #ffe082; padding: 15px; 
+            border: 2px solid #ffa000; margin: 20px; border-radius: 15px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -50,9 +92,10 @@
     
     <div class="tabs">
         <button onclick="showTab('upgrades')">Клики</button>
-        <button onclick="autoTab()">Авто</button>
+        <button onclick="showTab('auto')">Авто</button>
         <button onclick="showTab('special')">Королевский</button>
-        <button onclick="showTab('prestige')">Перерождение</button>
+        <button id="prestigeTabBtn" onclick="showTab('prestige')">Перерождение</button>
+        <button id="adminTabBtn" onclick="showTab('admin')" style="display:none; background: #ffa000;">Админка</button>
     </div>
 
     <div id="upgrades" class="tab active">
@@ -75,10 +118,38 @@
         <button id="prestigeBtn" onclick="doPrestige()" disabled>Перерождение (100к 🐾)</button>
     </div>
 
-    <div id="admin-panel">
-        <h3>Админ-панель 🛠️</h3>
-        <input type="number" id="cheatCoins" placeholder="Сумма">
-        <button onclick="cheat()">Добавить</button>
+    <div id="admin" class="tab">
+        <div id="admin-panel">
+            <h3>Админ-панель 🛠️</h3>
+            <p style="font-size: 12px;">Ты нашел секрет! Накручивай перерождения бесплатно.</p>
+            <input type="number" id="cheatPrestige" placeholder="Кол-во" style="padding: 10px; width: 100px; border-radius: 5px; border: 1px solid #ccc;">
+            <button onclick="cheatPrestige()" style="background: #e65100;">Добавить</button>
+            <br>
+            <button onclick="showTab('upgrades')" style="background: #333; font-size: 10px;">Закрыть</button>
+        </div>
+    </div>
+
+    <img id="secret-paw" src="https://cdn-icons-png.flaticon.com/512/36/36467.png" alt="Пасхалка">
+
+    <div id="puzzle-overlay">
+        <div id="puzzle-container">
+            <h3>Введи код 🔐</h3>
+            <p style="font-size: 12px; color: #666;">Нажми 3 правильных цвета</p>
+            <div class="puzzle-colors">
+                <div class="color-btn c-red" onclick="puzzleInput('red')"></div>
+                <div class="color-btn c-blue" onclick="puzzleInput('blue')"></div>
+                <div class="color-btn c-purple" onclick="puzzleInput('purple')"></div>
+                <div class="color-btn c-green" onclick="puzzleInput('green')"></div>
+                <div class="color-btn c-yellow" onclick="puzzleInput('yellow')"></div>
+                <br>
+                <div class="color-btn c-orange" onclick="puzzleInput('orange')"></div>
+                <div class="color-btn c-pink" onclick="puzzleInput('pink')"></div>
+                <div class="color-btn c-cyan" onclick="puzzleInput('cyan')"></div>
+                <div class="color-btn c-lime" onclick="puzzleInput('lime')"></div>
+                <div class="color-btn c-brown" onclick="puzzleInput('brown')"></div>
+            </div>
+            <button onclick="closePuzzle()" style="background: #333; padding: 5px 10px; font-size: 10px;">Закрыть</button>
+        </div>
     </div>
 
     <script>
@@ -96,6 +167,12 @@
             priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000
         };
 
+        // Логика головоломки
+        let puzzleSequence = [];
+        const puzzleCorrect = ['red', 'blue', 'purple'];
+        const puzzleOverlay = document.getElementById('puzzle-overlay');
+        const adminTabBtn = document.getElementById('adminTabBtn');
+
         function update() {
             document.getElementById('coins').innerText = Math.floor(coins);
             document.getElementById('totalLifetime').innerText = Math.floor(totalLifetime);
@@ -107,8 +184,6 @@
                 let el = document.getElementById(key);
                 if(el) el.innerText = Math.floor(prices[key]);
             }
-            
-            if (totalLifetime >= 1000000) document.getElementById('admin-panel').style.display = 'block';
         }
 
         document.getElementById('cat').onclick = (e) => {
@@ -147,24 +222,60 @@
             }
         }
 
-        function doPrestige() {
-            if (coins >= 100000) {
+        function addPrestige(count) {
+            for(let i=0; i<count; i++) {
                 prestigeCount++;
                 prestigeMult += 0.5;
-                coins = 0; clickPower = 1; autoCPS = 0; royalMult = 1; royalBonus = 0;
-                prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
-                document.getElementById('royalBtn').disabled = false;
                 const miniCat = document.createElement('img');
                 miniCat.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
                 miniCat.className = "cat-mini";
                 document.getElementById('cat-farm').appendChild(miniCat);
-                update();
+            }
+            update();
+        }
+
+        function doPrestige() {
+            if (coins >= 100000) {
+                coins = 0; clickPower = 1; autoCPS = 0; royalMult = 1; royalBonus = 0;
+                prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
+                document.getElementById('royalBtn').disabled = false;
+                addPrestige(1);
             }
         }
 
-        function cheat() {
-            let val = parseInt(document.getElementById('cheatCoins').value);
-            if (!isNaN(val)) { coins += val; totalLifetime += val; update(); }
+        // Логика пасхалки
+        document.getElementById('secret-paw').onclick = () => {
+            puzzleSequence = [];
+            puzzleOverlay.style.display = 'flex';
+        };
+
+        function puzzleInput(color) {
+            puzzleSequence.push(color);
+            if (puzzleSequence.length === 3) {
+                if (JSON.stringify(puzzleSequence) === JSON.stringify(puzzleCorrect)) {
+                    // Код верный!
+                    closePuzzle();
+                    adminTabBtn.style.display = 'inline-block';
+                    document.getElementById('admin-panel').style.display = 'block';
+                    showTab('admin');
+                    alert("СЕКРЕТНАЯ КОМНАТА ОТКРЫТА!");
+                } else {
+                    // Ошибка
+                    closePuzzle();
+                    alert("Неверный код. Попробуй еще раз.");
+                }
+            }
+        }
+
+        function closePuzzle() { puzzleOverlay.style.display = 'none'; }
+
+        // Читы
+        function cheatPrestige() {
+            let val = parseInt(document.getElementById('cheatPrestige').value);
+            if (!isNaN(val) && val > 0) {
+                addPrestige(val);
+                alert("Накручено " + val + " перерождений!");
+            }
         }
 
         function showTab(id) {
@@ -172,13 +283,12 @@
             document.getElementById(id).classList.add('active');
         }
         
-        function autoTab() { showTab('auto'); }
-
         setInterval(() => { coins += autoCPS; totalLifetime += autoCPS; update(); }, 1000);
         update();
     </script>
 </body>
 </html>
+
 
 
 
