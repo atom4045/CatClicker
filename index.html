@@ -3,89 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cat Clicker Pro Evolution</title>
+    <title>Cat Clicker Pro Balance</title>
     <style>
         body { 
-            text-align: center; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: #ffe4e1; 
-            overflow-x: hidden;
-            margin: 0;
-            padding-top: 60px;
+            text-align: center; font-family: 'Segoe UI', sans-serif; 
+            background: #ffe4e1; margin: 0; padding-top: 60px; overflow-x: hidden;
         }
-        
-        /* Статистика в углу */
         #top-stats {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border-radius: 15px;
-            text-align: right;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            z-index: 1000;
+            position: fixed; top: 10px; right: 10px; background: rgba(255, 255, 255, 0.9);
+            padding: 10px; border-radius: 15px; text-align: right; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000;
         }
         .stat-line { font-size: 14px; color: #d63384; font-weight: bold; }
-
         .tab { display: none; padding: 20px; }
         .active { display: block; }
-        
         button { 
-            padding: 12px 20px; margin: 8px; cursor: pointer; 
-            background: #ff69b4; color: white; border: none; 
-            border-radius: 10px; font-weight: bold; transition: 0.2s;
+            padding: 12px 20px; margin: 8px; cursor: pointer; background: #ff69b4; 
+            color: white; border: none; border-radius: 10px; font-weight: bold; transition: 0.2s;
         }
         button:active { transform: scale(0.95); }
-        button:disabled { background: #ccc; }
-
+        button:disabled { background: #ccc; cursor: not-allowed; }
         .stats { font-size: 24px; color: #d63384; margin: 10px; font-weight: bold; }
-        
-        /* Ферма котиков */
-        #cat-farm { 
-            display: flex; flex-wrap: wrap; justify-content: center; 
-            gap: 15px; margin: 20px auto; max-width: 90%;
-        }
-        
-        #cat { 
-            width: 180px; 
-            cursor: pointer; 
-            touch-action: manipulation; 
-            -webkit-user-select: none;
-            user-select: none;
-            transition: transform 0.1s;
-        }
+        #cat-farm { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin: 20px auto; min-height: 200px; }
+        #cat { width: 180px; cursor: pointer; touch-action: manipulation; -webkit-user-select: none; user-select: none; transition: transform 0.1s; }
         #cat:active { transform: scale(0.9); }
-
-        /* Маленькие котики (не сплюснутые) */
-        .cat-mini { 
-            width: 50px; 
-            height: 50px; 
-            object-fit: contain; 
-            animation: bounce 2s infinite ease-in-out;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        /* Эффект клика */
-        .click-effect {
-            position: absolute;
-            color: #ff1493;
-            font-weight: bold;
-            font-size: 24px;
-            pointer-events: none;
-            animation: flyUp 0.8s forwards;
-            z-index: 9999;
-        }
-
-        @keyframes flyUp {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-100px); }
-        }
-
+        .cat-mini { width: 50px; height: 50px; object-fit: contain; animation: bounce 2s infinite ease-in-out; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .click-effect { position: absolute; color: #ff1493; font-weight: bold; font-size: 24px; pointer-events: none; animation: flyUp 0.8s forwards; z-index: 9999; }
+        @keyframes flyUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
         #admin-panel { display: none; background: #ffcccc; padding: 15px; border: 2px solid red; margin: 20px; border-radius: 15px; }
     </style>
 </head>
@@ -112,24 +56,28 @@
     </div>
 
     <div id="upgrades" class="tab active">
-        <button onclick="buyClick(1, 10)">+1 сила (10 🐾)</button>
-        <button onclick="buyClick(10, 100)">+10 сила (100 🐾)</button>
+        <button id="btnClick1" onclick="buyUpgrade('click', 1, 'priceClick1')">+1 сила (<span id="priceClick1">10</span> 🐾)</button>
+        <button id="btnClick10" onclick="buyUpgrade('click', 10, 'priceClick10')">+10 сила (<span id="priceClick10">100</span> 🐾)</button>
+        <button id="btnClick1000" onclick="buyUpgrade('click', 1000, 'priceClick1000')">+1000 сила (<span id="priceClick1000">10000</span> 🐾)</button>
     </div>
+    
     <div id="auto" class="tab">
-        <button onclick="buyAuto(1, 100)">+1/сек (100 🐾)</button>
-        <button onclick="buyAuto(10, 1000)">+10/сек (1000 🐾)</button>
-        <button onclick="buyAuto(100, 10000)">+100/сек (10000 🐾)</button>
+        <button id="btnAuto1" onclick="buyUpgrade('auto', 1, 'priceAuto1')">+1/сек (<span id="priceAuto1">100</span> 🐾)</button>
+        <button id="btnAuto10" onclick="buyUpgrade('auto', 10, 'priceAuto10')">+10/сек (<span id="priceAuto10">1000</span> 🐾)</button>
+        <button id="btnAuto100" onclick="buyUpgrade('auto', 100, 'priceAuto100')">+100/сек (<span id="priceAuto100">10000</span> 🐾)</button>
     </div>
+    
     <div id="special" class="tab">
         <button id="royalBtn" onclick="buyRoyal()">Королевский режим (50к 🐾, 5x, +30 сила)</button>
     </div>
+    
     <div id="prestige" class="tab">
         <button id="prestigeBtn" onclick="doPrestige()" disabled>Перерождение (100к 🐾)</button>
     </div>
 
     <div id="admin-panel">
         <h3>Админ-панель 🛠️</h3>
-        <input type="number" id="cheatCoins" placeholder="Сумма" style="padding: 5px;">
+        <input type="number" id="cheatCoins" placeholder="Сумма">
         <button onclick="cheat()">Добавить</button>
     </div>
 
@@ -143,6 +91,12 @@
         let prestigeMult = 1;
         let prestigeCount = 0;
 
+        // Объект с ценами
+        let prices = {
+            priceClick1: 10, priceClick10: 100, priceClick1000: 10000,
+            priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000
+        };
+
         const catMain = document.getElementById('cat');
 
         function update() {
@@ -152,6 +106,11 @@
             document.getElementById('cpsDisplay').innerText = autoCPS;
             document.getElementById('prestigeBtn').disabled = coins < 100000;
             
+            // Обновляем цены в интерфейсе
+            for (let key in prices) {
+                document.getElementById(key).innerText = Math.floor(prices[key]);
+            }
+            
             if (totalLifetime >= 1000000) document.getElementById('admin-panel').style.display = 'block';
         }
 
@@ -159,8 +118,6 @@
             let gain = (clickPower + royalBonus) * royalMult * prestigeMult;
             coins += gain;
             totalLifetime += gain;
-            
-            // Эффект клика
             createClickEffect(e.pageX, e.pageY, "+" + Math.floor(gain));
             update();
         });
@@ -175,16 +132,24 @@
             setTimeout(() => effect.remove(), 800);
         }
 
-        function buyClick(p, c) { if (coins >= c) { coins -= c; clickPower += p; update(); } }
-        function buyAuto(a, c) { if (coins >= c) { coins -= c; autoCPS += a; update(); } }
-        
+        // Универсальная функция покупки с ростом цены
+        function buyUpgrade(type, amount, priceKey) {
+            let cost = prices[priceKey];
+            if (coins >= cost) {
+                coins -= cost;
+                if (type === 'click') clickPower += amount;
+                if (type === 'auto') autoCPS += amount;
+                
+                // Рост цены на 15%
+                prices[priceKey] = Math.ceil(prices[priceKey] * 1.15);
+                update();
+            }
+        }
+
         function buyRoyal() {
             if (coins >= 50000) { 
-                coins -= 50000; 
-                royalMult = 5; 
-                royalBonus = 30; 
-                document.getElementById('royalBtn').disabled = true; 
-                update(); 
+                coins -= 50000; royalMult = 5; royalBonus = 30; 
+                document.getElementById('royalBtn').disabled = true; update(); 
             }
         }
 
@@ -193,16 +158,15 @@
                 prestigeCount++;
                 prestigeMult += 0.5;
                 coins = 0; clickPower = 1; autoCPS = 0; royalMult = 1; royalBonus = 0;
+                // Сброс цен (по желанию можно оставить, но обычно сбрасывают)
+                prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
                 document.getElementById('royalBtn').disabled = false;
-                
-                // Добавляем маленького котика (не сплюснутого)
                 const miniCat = document.createElement('img');
                 miniCat.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
                 miniCat.className = "cat-mini";
                 document.getElementById('cat-farm').appendChild(miniCat);
-                
                 update();
-                alert("Перерождение совершено! Множитель вырос!");
+                alert("Перерождение! Мир сброшен, множитель вырос!");
             }
         }
 
@@ -216,14 +180,12 @@
             document.getElementById(id).classList.add('active');
         }
 
-        setInterval(() => { 
-            coins += autoCPS; 
-            totalLifetime += autoCPS; 
-            update(); 
-        }, 1000);
+        setInterval(() => { coins += autoCPS; totalLifetime += autoCPS; update(); }, 1000);
+        update(); // Первый запуск
     </script>
 </body>
 </html>
+
 
 
 
