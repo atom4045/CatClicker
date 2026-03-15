@@ -22,31 +22,43 @@
     <div class="shop">
         <button id="upg1">Авто-клик (10 🐾)</button>
         <button id="upg2">Бизнес-кот (100 🐾, +10/сек)</button>
-        <button id="upg3">Королевский кот (1000 🐾, x30 к клику)</button>
+        <button id="upg3">Королевский кот (1000 🐾)</button>
     </div>
 
     <script>
         let coins = 0;
         let totalClicks = 0;
         let cps = 0;
-        let clickValue = 1;
         const coinsEl = document.getElementById('coins');
         const totalEl = document.getElementById('totalClicks');
         const cpsEl = document.getElementById('cps');
         const catImg = document.getElementById('cat');
 
-        function updateCat() {
-            if (totalClicks >= 30000) catImg.src = "https://cdn-icons-png.flaticon.com/512/3069/3069176.png"; // Уровень 4
-            else if (totalClicks >= 20000) catImg.src = "https://cdn-icons-png.flaticon.com/512/2809/2809828.png"; // Уровень 3
-            else if (totalClicks >= 10000) catImg.src = "https://cdn-icons-png.flaticon.com/512/616/616489.png"; // Уровень 2
-        }
+        // Массив из 10 разных картинок котов (по одной на каждые 10к кликов)
+        const catImages = [
+            "https://cdn-icons-png.flaticon.com/512/616/616430.png",
+            "https://cdn-icons-png.flaticon.com/512/616/616489.png",
+            "https://cdn-icons-png.flaticon.com/512/2809/2809828.png",
+            "https://cdn-icons-png.flaticon.com/512/3069/3069176.png",
+            "https://cdn-icons-png.flaticon.com/512/1998/1998619.png",
+            "https://cdn-icons-png.flaticon.com/512/2299/2299323.png",
+            "https://cdn-icons-png.flaticon.com/512/1864/1864509.png",
+            "https://cdn-icons-png.flaticon.com/512/2553/2553642.png",
+            "https://cdn-icons-png.flaticon.com/512/4047/4047321.png",
+            "https://cdn-icons-png.flaticon.com/512/763/763742.png"
+        ];
 
         document.getElementById('cat').onclick = () => {
-            coins += clickValue;
+            coins += 30; // Всегда 30 за клик
             totalClicks++;
             coinsEl.innerText = coins;
             totalEl.innerText = totalClicks;
-            updateCat();
+            
+            // Смена картинки каждые 10 000 кликов
+            let level = Math.floor(totalClicks / 10000);
+            if (level < catImages.length) {
+                catImg.src = catImages[level];
+            }
         };
 
         document.getElementById('upg1').onclick = () => {
@@ -56,19 +68,14 @@
             if (coins >= 100) { coins -= 100; cps += 10; coinsEl.innerText = coins; cpsEl.innerText = cps; }
         };
         document.getElementById('upg3').onclick = () => {
-            if (coins >= 1000) { 
-                coins -= 1000; 
-                clickValue = 30; 
-                coinsEl.innerText = coins;
-                document.getElementById('upg3').disabled = true;
-                alert("Кот стал королевским! Клик теперь дает 30!");
-            }
+            if (coins >= 1000) { coins -= 1000; coinsEl.innerText = coins; alert("Королевский кот активирован!"); }
         };
 
         setInterval(() => { coins += cps; coinsEl.innerText = coins; }, 1000);
     </script>
 </body>
 </html>
+
 
 
 
