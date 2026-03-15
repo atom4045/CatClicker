@@ -3,86 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cat Clicker: God Edition Pro</title>
+    <title>Cat Clicker: Cosmic Evolution</title>
     <style>
         body { 
             text-align: center; font-family: 'Segoe UI', sans-serif; 
-            background: #ffe4e1; margin: 0; padding-top: 60px; overflow-x: hidden;
-            transition: background 0.5s; position: relative; min-height: 100vh;
+            background: #1a1a2e; color: white; margin: 0; padding-top: 60px; overflow-x: hidden;
+            transition: 0.5s; position: relative; min-height: 100vh;
         }
         .admin-bg { animation: rgbBg 5s infinite linear; }
-        @keyframes rgbBg {
-            0% { background: #ffcccc; } 33% { background: #ccffcc; } 66% { background: #ccccff; } 100% { background: #ffcccc; }
-        }
+        @keyframes rgbBg { 0% { background: #4a00e0; } 50% { background: #8e2de2; } 100% { background: #4a00e0; } }
+
         #top-stats {
-            position: fixed; top: 10px; right: 10px; background: rgba(255, 255, 255, 0.9);
-            padding: 10px; border-radius: 15px; text-align: right; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000;
+            position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7);
+            padding: 10px; border-radius: 15px; text-align: right; border: 1px solid #d63384; z-index: 1000;
         }
-        .stat-line { font-size: 14px; color: #d63384; font-weight: bold; }
+        .stat-line { font-size: 14px; color: #ff69b4; font-weight: bold; }
         .tab { display: none; padding: 20px; padding-bottom: 80px; }
         .active { display: block; }
+        
         button { 
-            padding: 12px 20px; margin: 8px; cursor: pointer; background: #ff69b4; 
+            padding: 12px 20px; margin: 8px; cursor: pointer; background: #6a11cb; 
             color: white; border: none; border-radius: 10px; font-weight: bold; transition: 0.2s;
         }
-        button:active { transform: scale(0.95); }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        .stats { font-size: 24px; color: #d63384; margin: 10px; font-weight: bold; }
+        button:hover { background: #2575fc; }
+        button:disabled { background: #444; color: #888; cursor: not-allowed; }
+
+        .stats { font-size: 26px; color: #00d2ff; margin: 10px; font-weight: bold; text-shadow: 0 0 10px #00d2ff; }
+        
         #cat-farm { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin: 20px auto; min-height: 200px; align-items: center; }
-        #cat { width: 180px; cursor: pointer; touch-action: manipulation; user-select: none; transition: transform 0.1s; z-index: 10; position: relative; }
-        .cat-mini { width: 50px; height: 50px; object-fit: contain; animation: bounce 2s infinite ease-in-out; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        #cat { width: 180px; cursor: pointer; touch-action: manipulation; user-select: none; transition: transform 0.1s; z-index: 10; position: relative; filter: drop-shadow(0 0 15px #6a11cb); }
         
-        /* Эффект дождя (ГИГАНТСКИЕ КОТЫ) */
-        .rain-cat {
-            position: fixed; top: -300px; width: 300px; height: 300px; /* ГИГАНТЫ */
-            pointer-events: none; z-index: 5000; animation: fall linear forwards;
-            opacity: 0.8;
+        /* Созвездия стили */
+        .constellation-card {
+            background: rgba(255, 255, 255, 0.1); border: 1px solid #00d2ff;
+            padding: 15px; border-radius: 15px; margin: 10px auto; max-width: 400px;
         }
-        @keyframes fall {
-            to { transform: translateY(130vh) rotate(180deg); }
-        }
+        .timer-bar { color: #ff4757; font-size: 12px; margin-top: 5px; font-style: italic; }
 
-        /* Эффект покупки (ВЗРЫВ КОТОВ) */
-        .buy-particle {
-            position: fixed; width: 30px; height: 30px;
-            pointer-events: none; z-index: 6000; animation: explode 1s ease-out forwards;
-        }
-        @keyframes explode {
-            0% { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
-        }
+        .rain-cat { position: fixed; top: -300px; width: 250px; pointer-events: none; z-index: 5000; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(130vh) rotate(360deg); } }
 
-        .click-effect { position: absolute; color: #ff1493; font-weight: bold; font-size: 24px; pointer-events: none; animation: flyUp 0.8s forwards; z-index: 9999; }
-        @keyframes flyUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
-        
-        #secret-paw { position: fixed; bottom: 10px; left: 10px; width: 30px; opacity: 0.2; cursor: pointer; z-index: 2000; }
-        #puzzle-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; justify-content: center; align-items: center; }
-        #puzzle-container { background: white; padding: 20px; border-radius: 20px; text-align: center; }
-        .color-btn { width: 45px; height: 45px; border-radius: 8px; margin: 5px; cursor: pointer; display: inline-block; border: 1px solid #000; }
-        .admin-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .buy-particle { position: fixed; width: 30px; pointer-events: none; z-index: 6000; animation: explode 1s ease-out forwards; }
+        @keyframes explode { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
+
+        #secret-paw { position: fixed; bottom: 10px; left: 10px; width: 30px; opacity: 0.3; cursor: pointer; z-index: 2000; filter: invert(1); }
+        #puzzle-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center; }
+        .color-btn { width: 45px; height: 45px; border-radius: 8px; margin: 5px; cursor: pointer; display: inline-block; border: 1px solid white; }
     </style>
 </head>
 <body id="mainBody">
 
     <div id="top-stats">
-        <div class="stat-line">Множитель: x<span id="totalMult">1.0</span></div>
+        <div class="stat-line">Мульти: x<span id="totalMult">1.0</span></div>
         <div class="stat-line">Доход: <span id="cpsDisplay">0</span>/сек</div>
+        <div class="stat-line" style="color: gold;">Звезды: <span id="starEnergy">0</span> / 1000</div>
     </div>
 
-    <h1>🐾 Cat Clicker Pro 🐾</h1>
-    <div class="stats">Коины: <span id="coinsDisplay">0</span></div>
+    <h1>✨ Cosmic Cat Clicker ✨</h1>
+    <div class="stats">🐾 <span id="coinsDisplay">0</span></div>
     
     <div id="cat-farm">
         <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" alt="Кот">
     </div>
     
     <div class="tabs-menu">
-        <button onclick="showTab('upgrades')">Клики</button>
+        <button onclick="showTab('upgrades')">Магазин</button>
         <button onclick="showTab('auto')">Авто</button>
+        <button onclick="showTab('cosmos')">🌌 КОСМОС</button>
         <button onclick="showTab('special')">👑 Король</button>
         <button onclick="showTab('prestige')">Перерождение</button>
-        <button id="adminTabBtn" onclick="showTab('admin')" style="display:none; background: #333; border: 2px solid gold;">🛠 АДМИН</button>
+        <button id="adminTabBtn" onclick="showTab('admin')" style="display:none; background: #ff4757;">🛠 АДМИН</button>
     </div>
 
     <div id="upgrades" class="tab active">
@@ -96,11 +86,33 @@
         <button onclick="buyUpgrade('auto', 10, 'priceAuto10', 1.2)">+10/сек (<span id="priceAuto10">1000</span>)</button>
         <button onclick="buyUpgrade('auto', 100, 'priceAuto100', 1.2)">+100/сек (<span id="priceAuto100">10000</span>)</button>
     </div>
+
+    <div id="cosmos" class="tab">
+        <h2>Созвездия Котов 🌌</h2>
+        <p>Нужно 1000 кликов (звезд), чтобы активировать на 2 минуты</p>
+        
+        <div class="constellation-card">
+            <h3>💤 Ленивый Кот</h3>
+            <p>Автокликеры приносят в 10 раз больше, но Клик дает 0. Полный AFK режим.</p>
+            <button id="btnLazy" onclick="activateConst('lazy')">Активировать</button>
+        </div>
+
+        <div class="constellation-card">
+            <h3>🐈 Ночной Тыгыдык</h3>
+            <p>Сила клика растет каждую секунду, пока ты НЕ кликаешь. Копи силу - бей один раз!</p>
+            <button id="btnTygydyk" onclick="activateConst('tygydyk')">Активировать</button>
+        </div>
+
+        <div class="constellation-card">
+            <h3>🕳️ Черная Дыра</h3>
+            <p>Все в магазине стоит 1 коин! Но твои деньги тают каждую секунду. Успей купить всё!</p>
+            <button id="btnHole" onclick="activateConst('hole')">Активировать</button>
+        </div>
+        <div id="activeTimer" style="font-weight: bold; color: #00d2ff; margin-top: 10px;"></div>
+    </div>
     
     <div id="special" class="tab">
-        <h3>Королевский режим 👑</h3>
-        <p>Множитель x5 и +30 к силе клика</p>
-        <button id="royalBtn" onclick="buyRoyal()">Купить за 50,000 🐾</button>
+        <button id="royalBtn" onclick="buyRoyal()">👑 Королевский режим (50к, x5 мульт)</button>
     </div>
     
     <div id="prestige" class="tab">
@@ -108,128 +120,159 @@
     </div>
 
     <div id="admin" class="tab">
-        <div style="background: white; padding: 20px; border-radius: 20px; border: 4px solid gold;">
-            <h2 style="color: gold; text-shadow: 1px 1px 2px #000;">⚡ ПАНЕЛЬ БОГА ⚡</h2>
-            <div class="admin-controls">
-                <button onclick="startCatRain()" style="background: linear-gradient(to bottom, #ff00cc, #333); grid-column: span 2;">🐱 ГИГАНТСКИЙ ДОЖДЬ 🐱</button>
-                <button onclick="coins += 1000000; update();" style="background: #444;">+1М Коинов</button>
-                <button onclick="prestigeMult += 10; update();" style="background: #444;">+10x Мульт</button>
-                <button onclick="for(let k in prices) prices[k] = 0; update();" style="background: #444;">Шоп 0🐾</button>
-                <button onclick="document.getElementById('mainBody').classList.toggle('admin-bg');" style="background: #444;">RGB Фон</button>
-            </div>
+        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 20px; border: 2px solid #ff4757;">
+            <h3>⚡ Панель Создателя</h3>
+            <button onclick="startCatRain()">🐱 ГИГАНТСКИЙ ДОЖДЬ</button>
+            <button onclick="coins += 1000000; update();">+1М Коинов</button>
+            <button onclick="starEnergy = 1000; update();">✨ Зарядить Звезды</button>
         </div>
     </div>
 
     <img id="secret-paw" src="https://cdn-icons-png.flaticon.com/512/36/36467.png">
 
     <div id="puzzle-overlay">
-        <div id="puzzle-container">
-            <h3>Цветовой код доступа</h3>
+        <div id="puzzle-container" style="background: #1a1a2e; border: 1px solid #00d2ff;">
+            <h3>Введите Космический Код</h3>
             <div id="puzzle-btns"></div>
             <button onclick="document.getElementById('puzzle-overlay').style.display='none'">Отмена</button>
         </div>
     </div>
 
     <script>
-        let coins = 0;
-        let clickPower = 1;
-        let autoCPS = 0;
-        let royalMult = 1;
-        let royalBonus = 0;
-        let prestigeMult = 1;
-        let isRainActive = false;
-        let prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
+        let coins = 0; let clickPower = 1; let autoCPS = 0;
+        let royalMult = 1; let royalBonus = 0; let prestigeMult = 1;
+        let starEnergy = 0;
         
+        // Переменные созвездий
+        let activeConst = null;
+        let constTime = 0;
+        let tygydykCharge = 0;
+
+        let prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
         const puzzleCorrect = ['red', 'blue', 'purple'];
         let puzzleSequence = [];
         const colorPalette = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'pink', 'cyan', 'lime', 'brown'];
 
         function update() {
+            let displayCPS = (activeConst === 'lazy') ? autoCPS * 10 : autoCPS;
+            if (activeConst === 'hole') displayCPS = autoCPS; // В дыре авто работает обычно
+
             document.getElementById('coinsDisplay').innerText = Math.floor(coins);
-            document.getElementById('totalMult').innerText = (royalMult * prestigeMult * (isRainActive ? 100 : 1)).toFixed(1);
-            document.getElementById('cpsDisplay').innerText = isRainActive ? autoCPS * 10 : autoCPS;
+            document.getElementById('totalMult').innerText = (royalMult * prestigeMult).toFixed(1);
+            document.getElementById('cpsDisplay').innerText = Math.floor(displayCPS);
+            document.getElementById('starEnergy').innerText = starEnergy;
             document.getElementById('prestigeBtn').disabled = coins < 100000;
-            for (let key in prices) { if(document.getElementById(key)) document.getElementById(key).innerText = Math.floor(prices[key]); }
+
+            // Блокировка кнопок космоса
+            document.getElementById('btnLazy').disabled = starEnergy < 1000 || activeConst !== null;
+            document.getElementById('btnTygydyk').disabled = starEnergy < 1000 || activeConst !== null;
+            document.getElementById('btnHole').disabled = starEnergy < 1000 || activeConst !== null;
+
+            for (let key in prices) {
+                let el = document.getElementById(key);
+                if(el) el.innerText = (activeConst === 'hole') ? "1" : Math.floor(prices[key]);
+            }
         }
 
         document.getElementById('cat').onclick = (e) => {
-            let rainBonus = isRainActive ? 100 : 1;
-            let gain = (clickPower + royalBonus) * royalMult * prestigeMult * rainBonus;
+            let gain = 0;
+            if (activeConst === 'lazy') {
+                gain = 0;
+            } else if (activeConst === 'tygydyk') {
+                gain = (clickPower + royalBonus + tygydykCharge) * royalMult * prestigeMult;
+                tygydykCharge = 0; // Сброс заряда
+            } else {
+                gain = (clickPower + royalBonus) * royalMult * prestigeMult;
+            }
+
             coins += gain;
-            
+            if (starEnergy < 1000) starEnergy++;
+
             const effect = document.createElement('div');
-            effect.className = 'click-effect';
+            effect.style.position = 'absolute'; effect.style.color = '#00d2ff';
             effect.style.left = e.pageX + 'px'; effect.style.top = e.pageY + 'px';
             effect.innerText = "+" + Math.floor(gain);
+            effect.style.pointerEvents = 'none'; effect.style.animation = 'flyUp 0.8s forwards';
             document.body.appendChild(effect);
             setTimeout(() => effect.remove(), 800);
             update();
         };
 
-        // ЭФФЕКТ ВЗРЫВА КОТОВ ПРИ ПОКУПКЕ
-        function createConfirmEffect(cost) {
-            // Количество котов зависит от цены (минимум 3, максимум 30)
-            let count = Math.min(30, Math.max(3, Math.floor(cost / 50)));
-            
-            for (let i = 0; i < count; i++) {
-                const p = document.createElement('img');
-                p.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
-                p.className = 'buy-particle';
-                
-                // Центр экрана
-                p.style.left = "50%";
-                p.style.top = "50%";
-                
-                // Случайное направление разлета
-                let tx = (Math.random() - 0.5) * 400 + "px";
-                let ty = (Math.random() - 0.5) * 400 + "px";
-                p.style.setProperty('--tx', tx);
-                p.style.setProperty('--ty', ty);
-                
-                // Случайная задержка
-                p.style.animationDelay = (Math.random() * 0.2) + "s";
-
-                document.body.appendChild(p);
-                setTimeout(() => p.remove(), 1200); // Удаляем через секунду
+        function activateConst(type) {
+            if (starEnergy >= 1000) {
+                starEnergy = 0;
+                activeConst = type;
+                constTime = 120; // 2 минуты
+                update();
             }
         }
 
         function buyUpgrade(type, amount, priceKey, growth) {
-            let cost = prices[priceKey];
-            if (coins >= cost) {
-                coins -= cost;
+            let currentPrice = (activeConst === 'hole') ? 1 : prices[priceKey];
+            if (coins >= currentPrice) {
+                coins -= currentPrice;
                 if (type === 'click') clickPower += amount;
                 else autoCPS += amount;
-                
-                // Запускаем эффект разлета котов
-                createConfirmEffect(cost);
-                
+                createConfirmEffect(currentPrice);
                 prices[priceKey] *= growth;
                 update();
             }
         }
 
+        function createConfirmEffect(cost) {
+            let count = Math.min(20, Math.max(2, Math.floor(cost / 100)));
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('img');
+                p.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
+                p.className = 'buy-particle'; p.style.left = "50%"; p.style.top = "50%";
+                p.style.setProperty('--tx', (Math.random()-0.5)*400+"px");
+                p.style.setProperty('--ty', (Math.random()-0.5)*400+"px");
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 1000);
+            }
+        }
+
+        // ОСНОВНОЙ ЦИКЛ (1 секунда)
+        setInterval(() => {
+            // Доход
+            let currentCPS = autoCPS;
+            if (activeConst === 'lazy') currentCPS = autoCPS * 10;
+            coins += currentCPS;
+
+            // Логика созвездий
+            if (activeConst !== null) {
+                constTime--;
+                document.getElementById('activeTimer').innerText = "Эффект [" + activeConst + "] активен: " + constTime + "с";
+                
+                if (activeConst === 'hole') {
+                    coins *= 0.95; // Деньги тают на 5% в секунду
+                }
+                if (activeConst === 'tygydyk') {
+                    tygydykCharge += (clickPower * 2); // Заряд растет
+                }
+
+                if (constTime <= 0) {
+                    activeConst = null;
+                    tygydykCharge = 0;
+                    document.getElementById('activeTimer').innerText = "";
+                    alert("Время созвездия истекло!");
+                }
+            }
+            update();
+        }, 1000);
+
         function buyRoyal() {
-            let cost = 50000;
-            if (coins >= cost) { 
-                coins -= cost; royalMult = 5; royalBonus = 30; 
-                document.getElementById('royalBtn').disabled = true;
-                document.getElementById('royalBtn').innerText = "КОРОЛЬ АКТИВИРОВАН";
-                
-                // Мега-взрыв котов для королевского режима
-                createConfirmEffect(cost);
-                
-                update(); 
+            if (coins >= 50000) { 
+                coins -= 50000; royalMult = 5; royalBonus = 30; 
+                document.getElementById('royalBtn').disabled = true; update(); 
             }
         }
 
         function doPrestige() {
             if (coins >= 100000) {
-                coins = 0; clickPower = 1; autoCPS = 0; royalMult = 1; royalBonus = 0;
+                coins = 0; clickPower = 1; autoCPS = 0; royalMult = 1; starEnergy = 0; activeConst = null;
                 prestigeMult += 0.5;
                 prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
-                document.getElementById('royalBtn').disabled = false;
-                document.getElementById('royalBtn').innerText = "Купить за 50,000 🐾";
                 const mini = document.createElement('img');
                 mini.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
                 mini.className = "cat-mini";
@@ -239,36 +282,17 @@
             }
         }
 
-        // ГИГАНТСКИЙ КОШАЧИЙ ДОЖДЬ
+        // Админка
         function startCatRain() {
-            if(isRainActive) return;
-            isRainActive = true;
-            update();
-            
-            // Частота появления гигантов чуть меньше, чтобы не перекрыть всё
-            let rainInterval = setInterval(() => {
+            let rainInt = setInterval(() => {
                 const c = document.createElement('img');
                 c.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
-                c.className = 'rain-cat';
-                c.style.left = (Math.random() * 80) + "vw"; // Чтобы не вылезали за края
-                c.style.animationDuration = (Math.random() * 3 + 2) + "s"; // Разная скорость падения
+                c.className = 'rain-cat'; c.style.left = Math.random()*80+"vw";
+                c.style.animationDuration = (Math.random()*2+2)+"s";
                 document.body.appendChild(c);
-                setTimeout(() => c.remove(), 5000); // Удаляем после пролета
-            }, 300); // Раз в 0.3 секунды падает гигант
-
-            // Бонус пассивных коинов во время дождя (5% в сек)
-            let bonusInterval = setInterval(() => {
-                coins += (coins * 0.05);
-                update();
-            }, 1000);
-
-            setTimeout(() => {
-                clearInterval(rainInterval);
-                clearInterval(bonusInterval);
-                isRainActive = false;
-                update();
-                alert("Гигантский дождь закончился!");
-            }, 15000); // Длится 15 секунд
+                setTimeout(() => c.remove(), 4000);
+            }, 300);
+            setTimeout(() => clearInterval(rainInt), 10000);
         }
 
         document.getElementById('secret-paw').onclick = () => {
@@ -297,17 +321,12 @@
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
-
-        setInterval(() => { 
-            let rainBoost = isRainActive ? 10 : 1;
-            coins += (autoCPS * rainBoost); 
-            update(); 
-        }, 1000);
         
         update();
     </script>
 </body>
 </html>
+
 
 
 
