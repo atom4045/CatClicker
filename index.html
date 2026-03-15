@@ -2,92 +2,80 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Cat Clicker Prestige</title>
+    <title>Cat Clicker Pro</title>
     <style>
         body { text-align: center; font-family: sans-serif; background: #ffe4e1; }
-        .tab-content { display: none; padding: 20px; }
+        .tab { display: none; padding: 20px; }
         .active { display: block; }
-        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
-        #admin-panel { display: none; background: #ffcccc; padding: 10px; margin-top: 20px; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; background: #ff69b4; color: white; border: none; border-radius: 8px; }
     </style>
 </head>
 <body>
-    <h1>🐾 Cat Clicker Evolution 🐾</h1>
+    <h1>🐾 Cat Clicker Pro 🐾</h1>
     <div class="counter">Каткойнов: <span id="coins">0</span></div>
-    <p>Множитель клика: <span id="mult">1</span></p>
-
-    <div id="game-area">
-        <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" style="width:200px; cursor:pointer">
-    </div>
-
+    <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" style="width:200px; cursor:pointer">
+    
     <div class="tabs">
-        <button onclick="showTab('shop')">Магазин</button>
-        <button onclick="showTab('prestige')">Перерождение</button>
+        <button onclick="showTab('upgrades')">Улучшения клика</button>
+        <button onclick="showTab('auto')">Авто-кликеры</button>
+        <button onclick="showTab('special')">Королевский режим</button>
     </div>
 
-    <div id="shop" class="tab-content active">
-        <h3>Магазин</h3>
-        <button onclick="buyClickUpgrade()">+1 к силе клика (10 🐾)</button>
-        <button onclick="buyAutoClicker()">Авто-кликер (50 🐾)</button>
+    <div id="upgrades" class="tab active">
+        <button onclick="buyClick(1, 10)">+1 к силе (10 🐾)</button>
+        <button onclick="buyClick(10, 100)">+10 к силе (100 🐾)</button>
     </div>
 
-    <div id="prestige" class="tab-content">
-        <h3>Перерождение</h3>
-        <button id="prestige-btn" onclick="doPrestige()" disabled>Переродиться (100к коинов)</button>
-        <p>Уровень перерождения: <span id="prestige-lvl">0</span></p>
+    <div id="auto" class="tab">
+        <button onclick="buyAuto(1, 100)">+1 авто/сек (100 🐾)</button>
+        <button onclick="buyAuto(10, 1000)">+10 авто/сек (1000 🐾)</button>
+        <button onclick="buyAuto(100, 10000)">+100 авто/сек (10000 🐾)</button>
     </div>
 
-    <div id="admin-panel">
-        <h3>Админ-панель</h3>
-        <input type="number" id="admin-coins" placeholder="Коины">
-        <button onclick="applyAdmin()">Применить</button>
+    <div id="special" class="tab">
+        <button id="royalBtn" onclick="buyRoyal()">Королевский режим (5000 🐾, 5x множитель, +30 к клику)</button>
     </div>
 
     <script>
         let coins = 0;
         let clickPower = 1;
-        let prestigeLvl = 0;
-        let multipliers = [1, 1.2, 1.4, 1.5, 1.7, 2, 2.2, 2.5, 2.8, 3];
-
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-        }
+        let autoCPS = 0;
+        let royalMultiplier = 1;
+        let royalBonus = 0;
 
         document.getElementById('cat').onclick = () => {
-            coins += (clickPower * multipliers[prestigeLvl]);
+            coins += (clickPower + royalBonus) * royalMultiplier;
             update();
         };
 
-        function buyClickUpgrade() {
-            if (coins >= 10) { coins -= 10; clickPower++; update(); }
+        function buyClick(power, cost) {
+            if (coins >= cost) { coins -= cost; clickPower += power; update(); }
         }
 
-        function doPrestige() {
-            if (coins >= 100000 && prestigeLvl < 10) {
-                coins = 0;
-                prestigeLvl++;
-                if (prestigeLvl >= 10) document.getElementById('admin-panel').style.display = 'block';
+        function buyAuto(amount, cost) {
+            if (coins >= cost) { coins -= cost; autoCPS += amount; update(); }
+        }
+
+        function buyRoyal() {
+            if (coins >= 5000) {
+                coins -= 5000;
+                royalMultiplier = 5;
+                royalBonus = 30;
+                document.getElementById('royalBtn').disabled = true;
                 update();
             }
         }
 
-        function update() {
-            document.getElementById('coins').innerText = Math.floor(coins);
-            document.getElementById('mult').innerText = multipliers[prestigeLvl];
-            document.getElementById('prestige-lvl').innerText = prestigeLvl;
-            document.getElementById('prestige-btn').disabled = coins < 100000;
+        function showTab(id) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
-        function applyAdmin() {
-            coins = parseInt(document.getElementById('admin-coins').value);
-            update();
+        function update() {
+            document.getElementById('coins').innerText = Math.floor(coins);
         }
+
+        setInterval(() => { coins += autoCPS; update(); }, 1000);
     </script>
 </body>
 </html>
-
-
-
-
-
