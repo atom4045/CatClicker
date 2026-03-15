@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cat Clicker Ultimate Fix</title>
+    <title>Cat Clicker: God Edition</title>
     <style>
         body { 
             text-align: center; font-family: 'Segoe UI', sans-serif; 
@@ -29,20 +29,27 @@
         button:disabled { background: #ccc; cursor: not-allowed; }
         .stats { font-size: 24px; color: #d63384; margin: 10px; font-weight: bold; }
         #cat-farm { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin: 20px auto; min-height: 200px; align-items: center; }
-        #cat { width: 180px; cursor: pointer; touch-action: manipulation; user-select: none; transition: transform 0.1s; }
+        #cat { width: 180px; cursor: pointer; touch-action: manipulation; user-select: none; transition: transform 0.1s; z-index: 10; position: relative; }
         .cat-mini { width: 50px; height: 50px; object-fit: contain; animation: bounce 2s infinite ease-in-out; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        
+        /* Эффект дождя */
+        .rain-cat {
+            position: fixed; top: -50px; width: 40px; height: 40px;
+            pointer-events: none; z-index: 5000; animation: fall linear forwards;
+        }
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+
         .click-effect { position: absolute; color: #ff1493; font-weight: bold; font-size: 24px; pointer-events: none; animation: flyUp 0.8s forwards; z-index: 9999; }
         @keyframes flyUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
         
-        /* Кнопки меню */
-        .tabs-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
-
-        /* Секретка */
         #secret-paw { position: fixed; bottom: 10px; left: 10px; width: 30px; opacity: 0.2; cursor: pointer; z-index: 2000; }
         #puzzle-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; justify-content: center; align-items: center; }
         #puzzle-container { background: white; padding: 20px; border-radius: 20px; text-align: center; }
         .color-btn { width: 45px; height: 45px; border-radius: 8px; margin: 5px; cursor: pointer; display: inline-block; border: 1px solid #000; }
+        .admin-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
     </style>
 </head>
 <body id="mainBody">
@@ -63,8 +70,8 @@
         <button onclick="showTab('upgrades')">Клики</button>
         <button onclick="showTab('auto')">Авто</button>
         <button onclick="showTab('special')">👑 Король</button>
-        <button onclick="showTab('prestige')">⭐ Ребёрт</button>
-        <button id="adminTabBtn" onclick="showTab('admin')" style="display:none; background: #333;">🛠 Админ</button>
+        <button onclick="showTab('prestige')">Перерождение</button>
+        <button id="adminTabBtn" onclick="showTab('admin')" style="display:none; background: #333; border: 2px solid gold;">🛠 АДМИН</button>
     </div>
 
     <div id="upgrades" class="tab active">
@@ -81,7 +88,7 @@
     
     <div id="special" class="tab">
         <h3>Королевский режим 👑</h3>
-        <p>Дает множитель x5 и +30 к силе клика навсегда (до перерождения)</p>
+        <p>Множитель x5 и +30 к силе клика</p>
         <button id="royalBtn" onclick="buyRoyal()">Купить за 50,000 🐾</button>
     </div>
     
@@ -90,12 +97,15 @@
     </div>
 
     <div id="admin" class="tab">
-        <div style="background: white; padding: 20px; border-radius: 20px; border: 3px dashed #333;">
-            <h3>Панель Бога ⚡</h3>
-            <button onclick="coins += 1000000; update();">+1М Коинов</button>
-            <button onclick="prestigeMult += 5; update();">+5x Множитель</button>
-            <button onclick="for(let k in prices) prices[k] = 0; update();">Бесплатный шоп</button>
-            <button onclick="document.getElementById('mainBody').classList.toggle('admin-bg');">RGB Фон</button>
+        <div style="background: white; padding: 20px; border-radius: 20px; border: 4px solid gold;">
+            <h2 style="color: gold; text-shadow: 1px 1px 2px #000;">⚡ ПАНЕЛЬ БОГА ⚡</h2>
+            <div class="admin-controls">
+                <button onclick="startCatRain()" style="background: linear-gradient(to bottom, #ff00cc, #333); grid-column: span 2;">🐱 КОШАЧИЙ ДОЖДЬ 🐱</button>
+                <button onclick="coins += 1000000; update();" style="background: #444;">+1М Коинов</button>
+                <button onclick="prestigeMult += 10; update();" style="background: #444;">+10x Мульт</button>
+                <button onclick="for(let k in prices) prices[k] = 0; update();" style="background: #444;">Шоп 0🐾</button>
+                <button onclick="document.getElementById('mainBody').classList.toggle('admin-bg');" style="background: #444;">RGB Фон</button>
+            </div>
         </div>
     </div>
 
@@ -103,7 +113,7 @@
 
     <div id="puzzle-overlay">
         <div id="puzzle-container">
-            <h3>Цветовой код</h3>
+            <h3>Цветовой код доступа</h3>
             <div id="puzzle-btns"></div>
             <button onclick="document.getElementById('puzzle-overlay').style.display='none'">Отмена</button>
         </div>
@@ -116,6 +126,7 @@
         let royalMult = 1;
         let royalBonus = 0;
         let prestigeMult = 1;
+        let isRainActive = false;
         let prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
         
         const puzzleCorrect = ['red', 'blue', 'purple'];
@@ -124,14 +135,15 @@
 
         function update() {
             document.getElementById('coinsDisplay').innerText = Math.floor(coins);
-            document.getElementById('totalMult').innerText = (royalMult * prestigeMult).toFixed(1);
-            document.getElementById('cpsDisplay').innerText = autoCPS;
+            document.getElementById('totalMult').innerText = (royalMult * prestigeMult * (isRainActive ? 100 : 1)).toFixed(1);
+            document.getElementById('cpsDisplay').innerText = isRainActive ? autoCPS * 10 : autoCPS;
             document.getElementById('prestigeBtn').disabled = coins < 100000;
             for (let key in prices) { if(document.getElementById(key)) document.getElementById(key).innerText = Math.floor(prices[key]); }
         }
 
         document.getElementById('cat').onclick = (e) => {
-            let gain = (clickPower + royalBonus) * royalMult * prestigeMult;
+            let rainBonus = isRainActive ? 100 : 1;
+            let gain = (clickPower + royalBonus) * royalMult * prestigeMult * rainBonus;
             coins += gain;
             
             const effect = document.createElement('div');
@@ -157,7 +169,7 @@
             if (coins >= 50000) { 
                 coins -= 50000; royalMult = 5; royalBonus = 30; 
                 document.getElementById('royalBtn').disabled = true;
-                document.getElementById('royalBtn').innerText = "АКТИВИРОВАНО";
+                document.getElementById('royalBtn').innerText = "КОРОЛЬ АКТИВИРОВАН";
                 update(); 
             }
         }
@@ -174,7 +186,39 @@
                 mini.className = "cat-mini";
                 document.getElementById('cat-farm').appendChild(mini);
                 update();
+                showTab('upgrades');
             }
+        }
+
+        // КОШАЧИЙ ДОЖДЬ
+        function startCatRain() {
+            if(isRainActive) return;
+            isRainActive = true;
+            update();
+            
+            let rainInterval = setInterval(() => {
+                const c = document.createElement('img');
+                c.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
+                c.className = 'rain-cat';
+                c.style.left = Math.random() * 100 + "vw";
+                c.style.duration = (Math.random() * 2 + 1) + "s";
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 3000);
+            }, 100);
+
+            // Бонус пассивных коинов во время дождя
+            let bonusInterval = setInterval(() => {
+                coins += (coins * 0.05);
+                update();
+            }, 1000);
+
+            setTimeout(() => {
+                clearInterval(rainInterval);
+                clearInterval(bonusInterval);
+                isRainActive = false;
+                update();
+                alert("Дождь закончился, но ты стал богаче!");
+            }, 15000);
         }
 
         document.getElementById('secret-paw').onclick = () => {
@@ -204,7 +248,12 @@
             document.getElementById(id).classList.add('active');
         }
 
-        setInterval(() => { coins += autoCPS; update(); }, 1000);
+        setInterval(() => { 
+            let rainBoost = isRainActive ? 10 : 1;
+            coins += (autoCPS * rainBoost); 
+            update(); 
+        }, 1000);
+        
         update();
     </script>
 </body>
