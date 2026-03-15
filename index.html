@@ -2,45 +2,58 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Cat Clicker</title>
+    <title>Cat Clicker Pro</title>
     <style>
-        body { text-align: center; font-family: sans-serif; background: #f0f0f0; }
-        #cat { width: 200px; cursor: pointer; transition: transform 0.1s; }
-        #cat:active { transform: scale(0.95); }
-        .stats { font-size: 24px; margin: 20px; }
-        button { padding: 10px 20px; font-size: 18px; cursor: pointer; }
+        body { text-align: center; font-family: 'Arial', sans-serif; background: #ffe4e1; }
+        #cat { width: 250px; cursor: pointer; margin-top: 20px; transition: 0.2s; }
+        #cat:hover { transform: scale(1.05); }
+        .counter { font-size: 32px; font-weight: bold; color: #d63384; }
+        .shop { margin-top: 30px; border-top: 2px solid #ccc; padding-top: 20px; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; cursor: pointer; background: #ff69b4; border: none; border-radius: 10px; color: white; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        #crown { display: none; font-size: 50px; }
     </style>
 </head>
 <body>
-    <h1>Кошачий кликер</h1>
-    <div class="stats">Каткойны: <span id="coins">0</span> 🐾</div>
+    <h1>🐾 Cat Clicker Pro 🐾</h1>
+    <div id="crown">👑</div>
+    <div class="counter">Каткойнов: <span id="coins">0</span></div>
     <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" alt="Кот">
-    <p>Клик в секунду: <span id="cps">0</span></p>
-    <button id="upgrade">Улучшение (10 🐾)</button>
+    <p>Доход: <span id="cps">0</span> в секунду</p>
+    
+    <div class="shop">
+        <button id="upg1">Авто-клик (10 🐾)</button>
+        <button id="upg2">Бизнес-кот (100 🐾, +10/сек)</button>
+        <button id="upg3">Королевский кот (1000 🐾, +100/сек)</button>
+    </div>
 
     <script>
         let coins = 0;
         let cps = 0;
-        const cat = document.getElementById('cat');
+        let clickValue = 30; // За клик дают 30
         const coinsEl = document.getElementById('coins');
         const cpsEl = document.getElementById('cps');
-        const upgradeBtn = document.getElementById('upgrade');
 
-        cat.onclick = () => { coins++; coinsEl.innerText = coins; };
+        document.getElementById('cat').onclick = () => { coins += clickValue; coinsEl.innerText = coins; };
 
-        upgradeBtn.onclick = () => {
-            if (coins >= 10) {
-                coins -= 10;
-                cps++;
-                coinsEl.innerText = coins;
-                cpsEl.innerText = cps;
-            } else { alert("Недостаточно каткойнов!"); }
+        document.getElementById('upg1').onclick = () => {
+            if (coins >= 10) { coins -= 10; cps += 1; coinsEl.innerText = coins; cpsEl.innerText = cps; }
         };
 
-        setInterval(() => {
-            coins += cps;
-            coinsEl.innerText = coins;
-        }, 1000);
+        document.getElementById('upg2').onclick = () => {
+            if (coins >= 100) { coins -= 100; cps += 10; coinsEl.innerText = coins; cpsEl.innerText = cps; }
+        };
+
+        document.getElementById('upg3').onclick = () => {
+            if (coins >= 1000) { 
+                coins -= 1000; cps += 100; 
+                coinsEl.innerText = coins; cpsEl.innerText = cps;
+                document.getElementById('crown').style.display = 'block'; // Появляется корона
+            }
+        };
+
+        setInterval(() => { coins += cps; coinsEl.innerText = coins; }, 1000);
     </script>
 </body>
 </html>
+
