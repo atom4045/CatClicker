@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cat Clicker Pro Evolution</title>
+    <title>Cat Clicker God Mode</title>
     <style>
         body { 
             text-align: center; font-family: 'Segoe UI', sans-serif; 
             background: #ffe4e1; margin: 0; padding-top: 60px; overflow-x: hidden;
-            position: relative; min-height: 100vh;
+            position: relative; min-height: 100vh; transition: background 0.5s;
         }
+        /* Эффект для админа */
+        .admin-bg { animation: rgbBg 5s infinite linear; }
+        @keyframes rgbBg {
+            0% { background: #ffcccc; } 33% { background: #ccffcc; } 66% { background: #ccccff; } 100% { background: #ffcccc; }
+        }
+
         #top-stats {
             position: fixed; top: 10px; right: 10px; background: rgba(255, 255, 255, 0.9);
             padding: 10px; border-radius: 15px; text-align: right; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000;
@@ -17,277 +23,178 @@
         .stat-line { font-size: 14px; color: #d63384; font-weight: bold; }
         .tab { display: none; padding: 20px; padding-bottom: 80px; }
         .active { display: block; }
+        
         button { 
             padding: 12px 20px; margin: 8px; cursor: pointer; background: #ff69b4; 
             color: white; border: none; border-radius: 10px; font-weight: bold; transition: 0.2s;
         }
         button:active { transform: scale(0.95); }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        .stats { font-size: 24px; color: #d63384; margin: 10px; font-weight: bold; }
+        button:disabled { background: #ccc; }
+
         #cat-farm { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin: 20px auto; min-height: 200px; align-items: center; }
-        #cat { width: 180px; cursor: pointer; touch-action: manipulation; -webkit-user-select: none; user-select: none; transition: transform 0.1s; }
-        #cat:active { transform: scale(0.9); }
-        .cat-mini { width: 50px; height: 50px; object-fit: contain; animation: bounce 2s infinite ease-in-out; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .click-effect { position: absolute; color: #ff1493; font-weight: bold; font-size: 24px; pointer-events: none; animation: flyUp 0.8s forwards; z-index: 9999; }
-        @keyframes flyUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
-        
-        /* Секретная лапка */
-        #secret-paw {
-            position: fixed; bottom: 10px; left: 10px;
-            width: 30px; height: 30px; cursor: pointer;
-            opacity: 0.3; transition: 0.3s; z-index: 2000;
-        }
-        #secret-paw:hover { opacity: 1; }
+        #cat { width: 180px; cursor: pointer; touch-action: manipulation; user-select: none; transition: transform 0.1s; }
+        .cat-mini { width: 50px; height: 50px; object-fit: contain; }
 
-        /* Головоломка */
-        #puzzle-overlay {
-            display: none; position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.8);
-            z-index: 3000; justify-content: center; align-items: center;
-        }
-        #puzzle-container {
-            background: white; padding: 20px; border-radius: 20px;
-            text-align: center; max-width: 300px;
-        }
-        .color-btn {
-            width: 50px; height: 50px; border-radius: 10px; border: 2px solid #333;
-            margin: 5px; cursor: pointer; display: inline-block;
-        }
+        /* Секретка */
+        #secret-paw { position: fixed; bottom: 10px; left: 10px; width: 30px; opacity: 0.2; cursor: pointer; z-index: 2000; }
+        #puzzle-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; justify-content: center; align-items: center; }
+        #puzzle-container { background: white; padding: 20px; border-radius: 20px; text-align: center; }
+        .color-btn { width: 45px; height: 45px; border-radius: 8px; margin: 5px; cursor: pointer; display: inline-block; border: 1px solid #000; }
 
-        /* Цвета */
-        .c-red { background: red; }
-        .c-blue { background: blue; }
-        .c-purple { background: purple; }
-        .c-green { background: green; }
-        .c-yellow { background: yellow; }
-        .c-orange { background: orange; }
-        .c-pink { background: pink; }
-        .c-cyan { background: cyan; }
-        .c-lime { background: lime; }
-        .c-brown { background: brown; }
-
-        /* Админ-комната */
-        #admin-panel { 
-            display: none; background: #ffe082; padding: 15px; 
-            border: 2px solid #ffa000; margin: 20px; border-radius: 15px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
+        /* Стили админки */
+        .admin-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .admin-btn { background: #444 !important; font-size: 12px !important; }
     </style>
 </head>
-<body>
+<body id="mainBody">
 
     <div id="top-stats">
         <div class="stat-line">Множитель: x<span id="multDisplay">1.0</span></div>
         <div class="stat-line">Доход: <span id="cpsDisplay">0</span>/сек</div>
     </div>
 
-    <h1>🐾 Cat Clicker Pro 🐾</h1>
-    <div class="stats">Каткойнов: <span id="coins">0</span></div>
-    <div style="font-size: 14px; color: #888;">Всего накоплено: <span id="totalLifetime">0</span></div>
+    <h1>🐾 Cat Clicker God Mode 🐾</h1>
+    <div class="stats" style="font-size: 28px; color: #d63384;">🐾 <span id="coins">0</span></div>
     
     <div id="cat-farm">
         <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" alt="Кот">
     </div>
     
     <div class="tabs">
-        <button onclick="showTab('upgrades')">Клики</button>
+        <button onclick="showTab('upgrades')">Магазин</button>
         <button onclick="showTab('auto')">Авто</button>
-        <button onclick="showTab('special')">Королевский</button>
-        <button id="prestigeTabBtn" onclick="showTab('prestige')">Перерождение</button>
-        <button id="adminTabBtn" onclick="showTab('admin')" style="display:none; background: #ffa000;">Админка</button>
+        <button id="adminTabBtn" onclick="showTab('admin')" style="display:none; background: #333;">🛠 АДМИН</button>
+        <button onclick="showTab('prestige')">Перерождение</button>
     </div>
 
     <div id="upgrades" class="tab active">
-        <button onclick="buyUpgrade('click', 1, 'priceClick1', 1.15)">+1 сила (<span id="priceClick1">10</span> 🐾)</button>
-        <button onclick="buyUpgrade('click', 10, 'priceClick10', 1.15)">+10 сила (<span id="priceClick10">100</span> 🐾)</button>
-        <button onclick="buyUpgrade('click', 1000, 'priceClick1000', 1.5)">+1000 сила (<span id="priceClick1000">10000</span> 🐾)</button>
+        <button onclick="buyUpgrade('click', 1, 'priceClick1', 1.15)">+1 (<span id="priceClick1">10</span>)</button>
+        <button onclick="buyUpgrade('click', 10, 'priceClick10', 1.15)">+10 (<span id="priceClick10">100</span>)</button>
+        <button onclick="buyUpgrade('click', 1000, 'priceClick1000', 1.5)">+1000 (<span id="priceClick1000">10000</span>)</button>
     </div>
-    
+
     <div id="auto" class="tab">
-        <button onclick="buyUpgrade('auto', 1, 'priceAuto1', 1.2)">+1/сек (<span id="priceAuto1">100</span> 🐾)</button>
-        <button onclick="buyUpgrade('auto', 10, 'priceAuto10', 1.2)">+10/сек (<span id="priceAuto10">1000</span> 🐾)</button>
-        <button onclick="buyUpgrade('auto', 100, 'priceAuto100', 1.2)">+100/сек (<span id="priceAuto100">10000</span> 🐾)</button>
+        <button onclick="buyUpgrade('auto', 1, 'priceAuto1', 1.2)">+1/сек (<span id="priceAuto1">100</span>)</button>
+        <button onclick="buyUpgrade('auto', 100, 'priceAuto100', 1.2)">+100/сек (<span id="priceAuto100">10000</span>)</button>
     </div>
-    
-    <div id="special" class="tab">
-        <button id="royalBtn" onclick="buyRoyal()">Королевский режим (50к 🐾, 5x, +30 сила)</button>
-    </div>
-    
+
     <div id="prestige" class="tab">
         <button id="prestigeBtn" onclick="doPrestige()" disabled>Перерождение (100к 🐾)</button>
     </div>
 
     <div id="admin" class="tab">
-        <div id="admin-panel">
-            <h3>Админ-панель 🛠️</h3>
-            <p style="font-size: 12px;">Ты нашел секрет! Накручивай перерождения бесплатно.</p>
-            <input type="number" id="cheatPrestige" placeholder="Кол-во" style="padding: 10px; width: 100px; border-radius: 5px; border: 1px solid #ccc;">
-            <button onclick="cheatPrestige()" style="background: #e65100;">Добавить</button>
-            <br>
-            <button onclick="showTab('upgrades')" style="background: #333; font-size: 10px;">Закрыть</button>
+        <div style="background: white; padding: 20px; border-radius: 20px; border: 3px dashed #333;">
+            <h3>Панель Бога ⚡</h3>
+            <div class="admin-controls">
+                <button class="admin-btn" onclick="cheatPrestige()">+5 Перерождений</button>
+                <button class="admin-btn" onclick="coins += 1000000; update();">🚀 +1М Коинов</button>
+                <button class="admin-btn" onclick="pricesReset()">💸 Бесплатный шоп</button>
+                <button class="admin-btn" onclick="toggleRGB()">🌈 RGB Режим</button>
+                <button class="admin-btn" onclick="catSize(300)">🐱 Огромный кот</button>
+                <button class="admin-btn" onclick="catSize(100)">🐭 Крохотный кот</button>
+            </div>
+            <p style="font-size: 10px; margin-top: 15px;">Твой секрет в безопасности...</p>
         </div>
     </div>
 
-    <img id="secret-paw" src="https://cdn-icons-png.flaticon.com/512/36/36467.png" alt="Пасхалка">
+    <img id="secret-paw" src="https://cdn-icons-png.flaticon.com/512/36/36467.png">
 
     <div id="puzzle-overlay">
         <div id="puzzle-container">
-            <h3>Введи код 🔐</h3>
-            <p style="font-size: 12px; color: #666;">Нажми 3 правильных цвета</p>
-            <div class="puzzle-colors">
-                <div class="color-btn c-red" onclick="puzzleInput('red')"></div>
-                <div class="color-btn c-blue" onclick="puzzleInput('blue')"></div>
-                <div class="color-btn c-purple" onclick="puzzleInput('purple')"></div>
-                <div class="color-btn c-green" onclick="puzzleInput('green')"></div>
-                <div class="color-btn c-yellow" onclick="puzzleInput('yellow')"></div>
-                <br>
-                <div class="color-btn c-orange" onclick="puzzleInput('orange')"></div>
-                <div class="color-btn c-pink" onclick="puzzleInput('pink')"></div>
-                <div class="color-btn c-cyan" onclick="puzzleInput('cyan')"></div>
-                <div class="color-btn c-lime" onclick="puzzleInput('lime')"></div>
-                <div class="color-btn c-brown" onclick="puzzleInput('brown')"></div>
-            </div>
-            <button onclick="closePuzzle()" style="background: #333; padding: 5px 10px; font-size: 10px;">Закрыть</button>
+            <h3>Цветовой замок</h3>
+            <div id="puzzle-btns"></div>
+            <button onclick="document.getElementById('puzzle-overlay').style.display='none'">Отмена</button>
         </div>
     </div>
 
     <script>
         let coins = 0;
-        let totalLifetime = 0;
         let clickPower = 1;
         let autoCPS = 0;
-        let royalMult = 1;
-        let royalBonus = 0;
         let prestigeMult = 1;
-        let prestigeCount = 0;
-
-        let prices = {
-            priceClick1: 10, priceClick10: 100, priceClick1000: 10000,
-            priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000
-        };
-
-        // Логика головоломки
-        let puzzleSequence = [];
+        let prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto100: 10000 };
+        
+        // Код: Красный, Синий, Фиолетовый
         const puzzleCorrect = ['red', 'blue', 'purple'];
-        const puzzleOverlay = document.getElementById('puzzle-overlay');
-        const adminTabBtn = document.getElementById('adminTabBtn');
+        let puzzleSequence = [];
+        const colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'pink', 'cyan', 'lime', 'brown'];
 
         function update() {
             document.getElementById('coins').innerText = Math.floor(coins);
-            document.getElementById('totalLifetime').innerText = Math.floor(totalLifetime);
-            document.getElementById('multDisplay').innerText = (royalMult * prestigeMult).toFixed(1);
+            document.getElementById('multDisplay').innerText = prestigeMult.toFixed(1);
             document.getElementById('cpsDisplay').innerText = autoCPS;
             document.getElementById('prestigeBtn').disabled = coins < 100000;
-            
-            for (let key in prices) {
-                let el = document.getElementById(key);
-                if(el) el.innerText = Math.floor(prices[key]);
-            }
+            for (let key in prices) { if(document.getElementById(key)) document.getElementById(key).innerText = Math.floor(prices[key]); }
         }
 
-        document.getElementById('cat').onclick = (e) => {
-            let gain = (clickPower + royalBonus) * royalMult * prestigeMult;
-            coins += gain;
-            totalLifetime += gain;
-            createClickEffect(e.pageX, e.pageY, "+" + Math.floor(gain));
+        document.getElementById('cat').onclick = () => {
+            coins += clickPower * prestigeMult;
             update();
         };
 
-        function createClickEffect(x, y, text) {
-            const effect = document.createElement('div');
-            effect.className = 'click-effect';
-            effect.style.left = (x - 10) + 'px';
-            effect.style.top = (y - 20) + 'px';
-            effect.innerText = text;
-            document.body.appendChild(effect);
-            setTimeout(() => effect.remove(), 800);
-        }
-
         function buyUpgrade(type, amount, priceKey, growth) {
-            let cost = prices[priceKey];
-            if (coins >= cost) {
-                coins -= cost;
+            if (coins >= prices[priceKey]) {
+                coins -= prices[priceKey];
                 if (type === 'click') clickPower += amount;
-                if (type === 'auto') autoCPS += amount;
-                prices[priceKey] = Math.ceil(prices[priceKey] * growth);
+                else autoCPS += amount;
+                prices[priceKey] *= growth;
                 update();
             }
         }
 
-        function buyRoyal() {
-            if (coins >= 50000) { 
-                coins -= 50000; royalMult = 5; royalBonus = 30; 
-                document.getElementById('royalBtn').disabled = true; update(); 
-            }
-        }
-
-        function addPrestige(count) {
-            for(let i=0; i<count; i++) {
-                prestigeCount++;
-                prestigeMult += 0.5;
-                const miniCat = document.createElement('img');
-                miniCat.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
-                miniCat.className = "cat-mini";
-                document.getElementById('cat-farm').appendChild(miniCat);
-            }
-            update();
-        }
-
         function doPrestige() {
             if (coins >= 100000) {
-                coins = 0; clickPower = 1; autoCPS = 0; royalMult = 1; royalBonus = 0;
-                prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
-                document.getElementById('royalBtn').disabled = false;
-                addPrestige(1);
+                coins = 0; clickPower = 1; autoCPS = 0;
+                prestigeMult += 0.5;
+                const mini = document.createElement('img');
+                mini.src = document.getElementById('cat').src;
+                mini.className = "cat-mini";
+                document.getElementById('cat-farm').appendChild(mini);
+                update();
             }
         }
 
-        // Логика пасхалки
+        // Логика пазла
         document.getElementById('secret-paw').onclick = () => {
             puzzleSequence = [];
-            puzzleOverlay.style.display = 'flex';
+            document.getElementById('puzzle-overlay').style.display = 'flex';
+            const btnContainer = document.getElementById('puzzle-btns');
+            btnContainer.innerHTML = '';
+            colors.forEach(c => {
+                const b = document.createElement('div');
+                b.className = 'color-btn';
+                b.style.background = c;
+                b.onclick = () => {
+                    puzzleSequence.push(c);
+                    if(puzzleSequence.length === 3) {
+                        if(JSON.stringify(puzzleSequence) === JSON.stringify(puzzleCorrect)) {
+                            document.getElementById('adminTabBtn').style.display = 'inline-block';
+                            showTab('admin');
+                        }
+                        document.getElementById('puzzle-overlay').style.display = 'none';
+                    }
+                };
+                btnContainer.appendChild(b);
+            });
         };
 
-        function puzzleInput(color) {
-            puzzleSequence.push(color);
-            if (puzzleSequence.length === 3) {
-                if (JSON.stringify(puzzleSequence) === JSON.stringify(puzzleCorrect)) {
-                    // Код верный!
-                    closePuzzle();
-                    adminTabBtn.style.display = 'inline-block';
-                    document.getElementById('admin-panel').style.display = 'block';
-                    showTab('admin');
-                    alert("СЕКРЕТНАЯ КОМНАТА ОТКРЫТА!");
-                } else {
-                    // Ошибка
-                    closePuzzle();
-                    alert("Неверный код. Попробуй еще раз.");
-                }
-            }
-        }
-
-        function closePuzzle() { puzzleOverlay.style.display = 'none'; }
-
-        // Читы
-        function cheatPrestige() {
-            let val = parseInt(document.getElementById('cheatPrestige').value);
-            if (!isNaN(val) && val > 0) {
-                addPrestige(val);
-                alert("Накручено " + val + " перерождений!");
-            }
-        }
+        // ФУНКЦИИ АДМИНА
+        function cheatPrestige() { prestigeMult += 2.5; update(); alert("Уровень силы поднят!"); }
+        function pricesReset() { for(let k in prices) prices[k] = 0; update(); }
+        function toggleRGB() { document.getElementById('mainBody').classList.toggle('admin-bg'); }
+        function catSize(s) { document.getElementById('cat').style.width = s + 'px'; }
 
         function showTab(id) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
-        
-        setInterval(() => { coins += autoCPS; totalLifetime += autoCPS; update(); }, 1000);
+
+        setInterval(() => { coins += autoCPS; update(); }, 1000);
         update();
     </script>
 </body>
 </html>
+
 
 
 
