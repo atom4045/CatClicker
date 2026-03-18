@@ -3,83 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cat Clicker: The Final Cosmic Era</title>
+    <title>Cat Fantasy RPG: Cosmic Era</title>
     <style>
-        :root { --p-color: #6a11cb; --s-color: #2575fc; --gold: #ffd700; --royal: #ff4500; }
+        :root { --gold: #ffd700; --mana: #00d2ff; --royal: #ff4500; --bg: #0b0518; }
         body { 
-            text-align: center; font-family: 'Segoe UI', sans-serif; 
-            background: #0f0c29; color: white; margin: 0; padding-top: 60px;
-            min-height: 100vh; overflow-x: hidden; transition: 0.5s;
+            text-align: center; font-family: 'Verdana', sans-serif; 
+            background: var(--bg); color: white; margin: 0; padding-top: 60px;
+            min-height: 100vh; overflow: hidden; transition: 0.5s;
         }
         
-        /* ЭФФЕКТ ГИПЕР-ТАПА (ПЛАВАЮЩИЙ ФОН) */
-        .float-bg { 
-            animation: floating 4s infinite ease-in-out; 
-            background: linear-gradient(45deg, #1a1a4e, #4b0082, #000000, #1a1a4e);
-            background-size: 400% 400%;
-        }
-        @keyframes floating {
-            0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
-            50% { background-position: 100% 50%; filter: hue-rotate(180deg); }
-            100% { background-position: 0% 50%; filter: hue-rotate(360deg); }
-        }
+        .float-bg { animation: spaceAnim 5s infinite alternate; background: linear-gradient(45deg, #1a0a33, #000, #1a0a33); background-size: 200% 200%; }
+        @keyframes spaceAnim { 0% { filter: hue-rotate(0deg) brightness(1); } 100% { filter: hue-rotate(180deg) brightness(1.3); } }
 
-        /* ИНТЕРФЕЙС */
         #top-ui {
             position: fixed; top: 0; width: 100%; background: rgba(0,0,0,0.9);
             display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000;
-            border-bottom: 3px solid var(--p-color);
+            border-bottom: 2px solid gold; box-shadow: 0 5px 15px rgba(0,0,0,0.8);
         }
-        .stat-box { font-weight: bold; font-size: 14px; color: #00d2ff; }
+        .stat { font-weight: bold; font-size: 12px; color: var(--mana); text-shadow: 1px 1px black; }
 
-        #coinsDisplay { font-size: 50px; font-weight: 900; text-shadow: 0 0 20px var(--s-color); margin: 20px 0; }
+        #coinsDisplay { font-size: 48px; font-weight: 900; color: var(--gold); text-shadow: 0 0 15px orange; margin: 15px 0; }
         
-        #cat-farm { position: relative; display: flex; justify-content: center; align-items: center; min-height: 250px; }
-        #cat { width: 220px; transition: 0.1s; cursor: pointer; filter: drop-shadow(0 0 20px var(--p-color)); z-index: 10; }
-        #cat:active { transform: scale(0.8); }
+        #cat-farm { position: relative; display: flex; justify-content: center; align-items: center; min-height: 220px; }
+        #cat { width: 200px; transition: 0.1s; cursor: pointer; filter: drop-shadow(0 0 20px purple); z-index: 10; }
+        #cat:active { transform: scale(0.85); }
 
-        /* МЕНЮ */
-        .tabs-menu { margin: 20px 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
-        .tab-btn { background: #1f1c2c; border: 1px solid var(--s-color); color: white; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .active-btn { background: var(--p-color); border-color: white; box-shadow: 0 0 10px var(--p-color); }
-        .tab-content { display: none; padding: 20px; max-width: 500px; margin: 0 auto 50px auto; background: rgba(0,0,0,0.6); border-radius: 20px; border: 1px solid #333; }
-        .active-tab { display: block; animation: zoomIn 0.3s ease; }
-        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .tab-btn { background: #2a1b4d; border: 1px solid gold; color: gold; padding: 8px 12px; margin: 2px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+        .active-btn { background: gold; color: black; box-shadow: 0 0 10px gold; }
+        .tab-content { display: none; padding: 15px; max-width: 450px; margin: 0 auto; background: rgba(20,10,40,0.8); border-radius: 15px; border: 1px solid #444; }
+        .active-tab { display: block; }
 
-        /* МАГАЗИН */
-        .upgrade-card {
-            background: rgba(255,255,255,0.05); margin: 10px 0; padding: 15px;
-            border-radius: 12px; border-left: 5px solid var(--s-color);
-            display: flex; justify-content: space-between; align-items: center;
+        .card {
+            background: rgba(255,255,255,0.05); margin: 8px 0; padding: 12px;
+            border-radius: 10px; border-left: 4px solid var(--mana);
+            display: flex; justify-content: space-between; align-items: center; text-align: left;
         }
-        .upgrade-card button { background: var(--p-color); border: none; color: white; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; min-width: 100px; }
-        .upgrade-card button:disabled { background: #444; }
+        .card button { background: #4b0082; border: 1px solid #9932cc; color: white; padding: 8px; border-radius: 5px; cursor: pointer; min-width: 80px; }
 
-        /* СПОСОБНОСТИ */
-        .ability-info { background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 10px; border: 1px solid var(--gold); }
-        .timer-display { color: var(--gold); font-size: 20px; font-weight: bold; margin: 10px; }
-
-        /* ВИЗУАЛЫ */
-        .star { position: fixed; width: 30px; pointer-events: none; z-index: 5; animation: starFall 1.5s linear forwards; }
-        @keyframes starFall { to { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
-        .particle { position: fixed; pointer-events: none; font-weight: bold; font-size: 22px; z-index: 100; animation: flyUp 0.8s forwards; }
+        /* ВИЗУАЛЬНЫЕ ЭФФЕКТЫ */
+        .paw-particle { position: fixed; width: 30px; pointer-events: none; z-index: 100; animation: pawOut 0.8s ease-out forwards; }
+        @keyframes pawOut { 0% { transform: scale(0.5) rotate(0deg); opacity: 1; } 100% { transform: translateY(-120px) rotate(45deg); opacity: 0; } }
+        
+        .dmg-num { position: fixed; font-weight: bold; font-size: 24px; color: white; z-index: 101; pointer-events: none; animation: flyUp 0.7s forwards; text-shadow: 2px 2px black; }
         @keyframes flyUp { to { transform: translateY(-100px); opacity: 0; } }
-        .shockwave { position: fixed; border: 4px solid #00ff88; border-radius: 50%; pointer-events: none; z-index: 99; animation: shock 0.5s forwards; }
-        @keyframes shock { 0% { width: 0; height: 0; opacity: 1; transform: translate(-50%, -50%); } 100% { width: 500px; height: 500px; opacity: 0; transform: translate(-50%, -50%); } }
 
-        /* ПАНЕЛИ */
-        #millionaireUI { display: none; background: linear-gradient(to right, #ffd700, #daa520); padding: 20px; border-radius: 15px; color: black; margin-top: 20px; }
-        #admin-box { border: 3px solid #ff4757; background: rgba(255, 71, 87, 0.1); padding: 20px; border-radius: 15px; }
-        #secret-paw { position: fixed; bottom: 15px; left: 15px; width: 35px; opacity: 0.1; cursor: pointer; }
+        .food-particle { position: fixed; font-size: 20px; pointer-events: none; z-index: 99; animation: explode 0.5s forwards; }
+        @keyframes explode { 0% { transform: translate(0,0); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)); opacity: 0; } }
+
+        /* БУСТЫ */
+        #food-timer { color: #00ff88; font-weight: bold; font-size: 18px; margin-bottom: 10px; }
+        #secret-paw { position: fixed; bottom: 15px; left: 15px; width: 30px; opacity: 0.1; cursor: pointer; }
     </style>
 </head>
 <body id="mainBody">
 
     <div id="top-ui">
-        <div class="stat-box">⚔️ Сила: <span id="pwrStat">1</span></div>
-        <div class="stat-box">🤖 Авто: <span id="cpsStat">0</span>/с</div>
-        <div class="stat-box">🌀 Мульти: x<span id="mltStat">1.0</span></div>
-        <div class="stat-box" style="color:var(--gold)">🕒 Таймер: <span id="tmrStat">0</span></div>
+        <div class="stat">💰 Золото: <span id="coinStat">0</span></div>
+        <div class="stat">⚔️ Урон: <span id="pwrStat">1</span></div>
+        <div class="stat">🍖 Корм: <span id="foodStat">0</span></div>
+        <div class="stat">⌛ Буст: <span id="tmrStat">нет</span></div>
     </div>
 
     <div id="coinsDisplay">0</div>
@@ -89,168 +71,159 @@
     </div>
 
     <div class="tabs-menu">
-        <button class="tab-btn active-btn" onclick="openTab(event, 'shop')">Магазин</button>
+        <button class="tab-btn active-btn" onclick="openTab(event, 'armory')">⚔️ Арсенал</button>
+        <button class="tab-btn" onclick="openTab(event, 'foodTab')">🍖 Кухня</button>
         <button class="tab-btn" onclick="openTab(event, 'cosmos')">🌌 Космос</button>
-        <button class="tab-btn" onclick="openTab(event, 'royalTab')">👑 Король</button>
         <button class="tab-btn" onclick="openTab(event, 'prestige')">✨ Дух</button>
-        <button id="adminTabBtn" class="tab-btn" style="display:none; color: #ff4757;" onclick="openTab(event, 'admin')">🛠 БОГ</button>
+        <button id="adminTabBtn" class="tab-btn" style="display:none; color:red" onclick="openTab(event, 'admin')">🔑 GOD</button>
     </div>
 
-    <div id="shop" class="tab-content active-tab">
-        <h3>Улучшения Клика</h3>
-        <div class="upgrade-card"><span>+1 Сила</span><button onclick="buy('click', 1, 'pC1', 1.15, event)">💰 <span id="pC1">10</span></button></div>
-        <div class="upgrade-card"><span>+10 Сила</span><button onclick="buy('click', 10, 'pC10', 1.15, event)">💰 <span id="pC10">100</span></button></div>
-        <div class="upgrade-card"><span>+100 Сила</span><button onclick="buy('click', 100, 'pC100', 1.15, event)">💰 <span id="pC100">1000</span></button></div>
-        <div class="upgrade-card"><span>+1000 Сила</span><button onclick="buy('click', 1000, 'pC1000', 1.2, event)">💰 <span id="pC1000">10000</span></button></div>
-        
-        <h3>Авто-Клик</h3>
-        <div class="upgrade-card"><span>+1 Авто</span><button onclick="buy('auto', 1, 'pA1', 1.12, event)">💰 <span id="pA1">50</span></button></div>
-        <div class="upgrade-card"><span>+10 Авто</span><button onclick="buy('auto', 10, 'pA10', 1.15, event)">💰 <span id="pA10">500</span></button></div>
-        <div class="upgrade-card"><span>+100 Авто</span><button onclick="buy('auto', 100, 'pA100', 1.15, event)">💰 <span id="pA100">5000</span></button></div>
-        <div class="upgrade-card"><span>+1000 Авто</span><button onclick="buy('auto', 1000, 'pA1000', 1.2, event)">💰 <span id="pA1000">50000</span></button></div>
+    <div id="armory" class="tab-content active-tab">
+        <div class="card"><div><strong>Деревянный меч</strong><br><small>+100 Клик</small></div><button onclick="buy('click', 100, 'pC100', 1.3, event)">💎 <span id="pC100">1000</span></button></div>
+        <div class="card" style="border-color:gold"><div><strong>Лазерный посох</strong><br><small>+1000 Клик</small></div><button onclick="buy('click', 1000, 'pC1000', 1.4, event)">💎 <span id="pC1000">10000</span></button></div>
+        <div class="card"><div><strong>Мышиная стража</strong><br><small>+50 Авто</small></div><button onclick="buy('auto', 50, 'pA50', 1.15, event)">💎 <span id="pA50">1000</span></button></div>
+    </div>
+
+    <div id="foodTab" class="tab-content">
+        <h3>Кошачья столовая</h3>
+        <p>100 прикормки = 1 минута сытости</p>
+        <div id="food-timer"></div>
+        <button class="tab-btn" style="width:100%; padding:15px;" onclick="feedCat()">ПОКОРМИТЬ (100 🍖)</button>
+        <ul style="text-align:left; font-size:12px; color:#aaa;">
+            <li>Котик сыт: x2 ко всем монетам</li>
+            <li>Скидка 30% на весь Арсенал</li>
+            <li>Фон начинает светиться магией</li>
+        </ul>
     </div>
 
     <div id="cosmos" class="tab-content">
-        <h2>Космические Силы</h2>
-        <p>Нужно 500 кликов (Прогресс: <span id="tapProg">0</span>)</p>
-        
-        <div class="ability-info">
-            <strong>🚀 Гипер-Тап (1 мин):</strong><br>
-            Удваивает силу клика и заставляет фон плавать. Активирует визуальный транс.
-        </div>
-        <button class="tab-btn" id="btnHyper" onclick="activate('hyper')">ЗАПУСК</button>
-
-        <div class="ability-info">
-            <strong>🕳️ Черная Дыра (1 мин):</strong><br>
-            Каждая покупка имеет 20% шанс стать абсолютно бесплатной.
-        </div>
-        <button class="tab-btn" id="btnHole" onclick="activate('hole')">ЗАПУСК</button>
-
-        <div class="ability-info">
-            <strong>🌟 Звездопад (1 мин):</strong><br>
-            Каждый ваш тап вызывает падающую звезду, которая приносит +100% прибыли.
-        </div>
-        <button class="tab-btn" id="btnStars" onclick="activate('stars')">ЗАПУСК</button>
-    </div>
-
-    <div id="royalTab" class="tab-content">
-        <h2>👑 Королевский Режим</h2>
-        <div class="upgrade-card" style="border-left-color: gold;">
-            <div><strong>Множитель Короля (x5)</strong><br><small>Увеличивает весь доход в 5 раз!</small></div>
-            <button id="royalBtn" onclick="buyRoyal()">💰 50,000</button>
-        </div>
-        <p id="royalStatus">Текущий статус: Простолюдин</p>
+        <p>Накопите 500 кликов (Энергия: <span id="tapProg">0</span>)</p>
+        <button class="tab-btn" onclick="startCosmos('hyper')">🚀 ГИПЕР-ТАП</button>
+        <button class="tab-btn" onclick="startCosmos('hole')">🕳️ ЧЕРНАЯ ДЫРА (20% FREE)</button>
+        <button class="tab-btn" onclick="startCosmos('stars')">🌟 ЗВЕЗДОПАД</button>
     </div>
 
     <div id="prestige" class="tab-content">
-        <div id="millionaireUI">
-            <h3>🏆 МЕНЮ МИЛЛИОНЕРА</h3>
-            <button onclick="coins += 50000000; update();">Выдать 50 МЛН</button>
-            <button onclick="pMult += 50; update();">+50 Множитель</button>
-        </div>
-        <div id="normalPrestige">
-            <h3>Перерождение</h3>
-            <button id="presBtn" class="tab-btn" style="width:100%" onclick="doPrestige()" disabled>Сброс за 100к (Мульти +1)</button>
-        </div>
+        <button id="presBtn" class="tab-btn" style="width:100%" onclick="prestige()" disabled>ПЕРЕРОЖДЕНИЕ (100к)</button>
+        <p>Награда: 100 🍖 и +1.0 к Мультипликатору</p>
+        <div id="petsBox"></div>
     </div>
 
     <div id="admin" class="tab-content">
-        <div id="admin-box">
-            <h2>🛠 ПАНЕЛЬ БОГА</h2>
-            <button class="tab-btn" onclick="coins += 100000000; update();">ДОБАВИТЬ 100 МЛН</button>
-            <button class="tab-btn" onclick="pMult += 100; update();">МНОЖИТЕЛЬ +100</button>
-            <button class="tab-btn" onclick="activeEffect = 'hyper'; abilityTime = 999; document.body.classList.add('float-bg'); update();">ВЕЧНЫЙ ГИПЕР</button>
-            <button class="tab-btn" onclick="location.reload()" style="background:red">ПОЛНЫЙ СБРОС</button>
+        <div id="admin-box" style="border:2px solid red; padding:10px;">
+            <button onclick="coins += 1000000000; update();">1 МИЛЛИАРД</button>
+            <button onclick="food += 1000; update();">+1000 КОРМА</button>
+            <button onclick="energy = 500; update();">MAX ЗВЕЗДЫ</button>
+            <button onclick="isFed = true; feedTime = 9999; update();">ВЕЧНО СЫТЫЙ</button>
         </div>
     </div>
 
-    <img id="secret-paw" src="https://cdn-icons-png.flaticon.com/512/36/36467.png" onclick="openAdmin()">
+    <img id="secret-paw" src="https://cdn-icons-png.flaticon.com/512/36/36467.png" onclick="askCode()">
 
     <script>
-        let coins = 0, clickPower = 1, autoCPS = 0, pMult = 1, rMult = 1, totalTaps = 0;
-        let activeEffect = null, abilityTime = 0;
-        let prices = { pC1:10, pC10:100, pC100:1000, pC1000:10000, pA1:50, pA10:500, pA100:5000, pA1000:50000 };
+        let coins=0, clickPower=1, autoCPS=0, mult=1, food=0, energy=0, isFed=false, feedTime=0, activeEffect=null, effectTime=0;
+        let prices = { pC100:1000, pC1000:10000, pA50:1000 };
+        const pawIcons = ['🐾', '🐱', '✨', '⚡'];
 
         function update() {
+            document.getElementById('coinStat').innerText = Math.floor(coins).toLocaleString();
+            document.getElementById('pwrStat').innerText = Math.floor(clickPower * mult * (isFed?2:1) * (activeEffect==='hyper'?2:1));
+            document.getElementById('foodStat').innerText = food;
+            document.getElementById('tmrStat').innerText = effectTime > 0 ? effectTime + "с" : (isFed ? "Сыт" : "нет");
             document.getElementById('coinsDisplay').innerText = Math.floor(coins).toLocaleString();
-            document.getElementById('pwrStat').innerText = Math.floor((activeEffect === 'hyper' ? clickPower * 2 : clickPower) * pMult * rMult);
-            document.getElementById('cpsStat').innerText = Math.floor(autoCPS * pMult * rMult);
-            document.getElementById('mltStat').innerText = (pMult * rMult).toFixed(1);
-            document.getElementById('tmrStat').innerText = abilityTime > 0 ? abilityTime + "с" : "—";
-            document.getElementById('tapProg').innerText = totalTaps;
+            document.getElementById('tapProg').innerText = energy;
+            document.getElementById('food-timer').innerText = isFed ? "СЫТ: " + feedTime + "с" : "";
 
-            for(let k in prices) if(document.getElementById(k)) document.getElementById(k).innerText = Math.floor(prices[k]).toLocaleString();
-            
+            for(let k in prices) {
+                let p = isFed ? prices[k] * 0.7 : prices[k];
+                if(document.getElementById(k)) document.getElementById(k).innerText = Math.floor(p).toLocaleString();
+            }
             document.getElementById('presBtn').disabled = coins < 100000;
-            document.getElementById('btnHyper').disabled = (totalTaps < 500 || abilityTime > 0);
-            document.getElementById('btnHole').disabled = (totalTaps < 500 || abilityTime > 0);
-            document.getElementById('btnStars').disabled = (totalTaps < 500 || abilityTime > 0);
-
-            if(coins >= 100000000) document.getElementById('millionaireUI').style.display = 'block';
         }
 
         function tap(e) {
-            let gain = (activeEffect === 'hyper' ? clickPower * 2 : clickPower) * pMult * rMult;
+            let gain = (clickPower * mult * (isFed?2:1) * (activeEffect==='hyper'?2:1));
             coins += gain;
-            totalTaps++;
-            createParticle(e.clientX, e.clientY, "+" + Math.floor(gain), "#00d2ff");
-            if(activeEffect === 'stars' || Math.random() > 0.8) spawnStar();
+            if(energy < 500) energy++;
+            
+            // Визуал лапки
+            const paw = document.createElement('div');
+            paw.className = 'paw-particle';
+            paw.innerText = pawIcons[Math.floor(Math.random()*pawIcons.length)];
+            paw.style.left = e.clientX + 'px'; paw.style.top = e.clientY + 'px';
+            paw.style.color = `hsl(${Math.random()*360}, 100%, 70%)`;
+            document.body.appendChild(paw);
+            setTimeout(() => paw.remove(), 800);
+
+            // Цифра урона
+            const dmg = document.createElement('div');
+            dmg.className = 'dmg-num';
+            dmg.innerText = "+" + Math.floor(gain);
+            dmg.style.left = e.clientX + 'px'; dmg.style.top = e.clientY + 'px';
+            document.body.appendChild(dmg);
+            setTimeout(() => dmg.remove(), 700);
+
+            if(activeEffect === 'stars' || Math.random() > 0.9) spawnStar();
             update();
         }
 
         function buy(type, amt, key, grow, e) {
-            let cost = prices[key];
+            let cost = isFed ? prices[key] * 0.7 : prices[key];
             let free = (activeEffect === 'hole' && Math.random() < 0.2);
-            if (coins >= cost || free) {
-                if(!free) coins -= cost; else createParticle(e.clientX, e.clientY, "БЕСПЛАТНО!", "gold");
+            if(coins >= cost || free) {
+                if(!free) coins -= cost;
                 if(type === 'click') clickPower += amt; else autoCPS += amt;
                 prices[key] *= grow;
-                showShock(e.clientX, e.clientY);
+                explodeFood(e.clientX, e.clientY);
                 update();
             }
         }
 
-        function activate(type) {
-            totalTaps = 0; activeEffect = type; abilityTime = 60;
-            if(type === 'hyper') document.body.classList.add('float-bg');
-            update();
-        }
-
-        function buyRoyal() {
-            if(coins >= 50000 && rMult === 1) {
-                coins -= 50000; rMult = 5;
-                document.getElementById('royalStatus').innerText = "Статус: КОРОЛЬ 👑";
-                document.getElementById('royalBtn').innerText = "КУПЛЕНО";
-                document.getElementById('royalBtn').disabled = true;
+        function feedCat() {
+            if(food >= 100) {
+                food -= 100; isFed = true; feedTime = 60;
+                document.body.classList.add('float-bg');
                 update();
             }
         }
 
-        function doPrestige() {
-            pMult += 1; coins = 0; clickPower = 1; autoCPS = 0; totalTaps = 0;
-            prices = { pC1:10, pC10:100, pC100:1000, pC1000:10000, pA1:50, pA10:500, pA100:5000, pA1000:50000 };
-            document.body.classList.remove('float-bg'); activeEffect = null; abilityTime = 0;
+        function startCosmos(type) {
+            if(energy >= 500) {
+                energy = 0; activeEffect = type; effectTime = 60;
+                update();
+            }
+        }
+
+        function prestige() {
+            mult += 1; food += 100; coins = 0; clickPower = 1; autoCPS = 0; energy = 0;
+            prices = { pC100:1000, pC1000:10000, pA50:1000 };
+            const p = document.createElement('span'); p.innerText = "👻"; document.getElementById('petsBox').appendChild(p);
             update();
+        }
+
+        function explodeFood(x, y) {
+            for(let i=0; i<10; i++) {
+                const f = document.createElement('div');
+                f.className = 'food-particle'; f.innerText = '🐟';
+                f.style.left = x + 'px'; f.style.top = y + 'px';
+                f.style.setProperty('--tx', (Math.random()-0.5)*200 + 'px');
+                f.style.setProperty('--ty', (Math.random()-0.5)*200 + 'px');
+                document.body.appendChild(f);
+                setTimeout(() => f.remove(), 500);
+            }
         }
 
         function spawnStar() {
-            const s = document.createElement('img');
-            s.src = "https://cdn-icons-png.flaticon.com/512/1828/1828884.png";
-            s.className = 'star'; s.style.left = Math.random() * 90 + "vw"; s.style.top = "-50px";
-            document.body.appendChild(s);
-            setTimeout(() => { coins += (clickPower * pMult * rMult); s.remove(); update(); }, 1500);
-        }
-
-        function createParticle(x, y, txt, col) {
-            const p = document.createElement('div');
-            p.className = 'particle'; p.innerText = txt; p.style.left = x + 'px'; p.style.top = y + 'px'; p.style.color = col;
-            document.body.appendChild(p); setTimeout(() => p.remove(), 800);
-        }
-
-        function showShock(x, y) {
             const s = document.createElement('div');
-            s.className = 'shockwave'; s.style.left = x + 'px'; s.style.top = y + 'px';
-            document.body.appendChild(s); setTimeout(() => s.remove(), 500);
+            s.innerText = "⭐"; s.style.position = 'fixed'; s.style.left = Math.random()*90+"vw"; s.style.top = "-50px";
+            s.style.transition = "1.5s linear"; s.style.fontSize = "30px"; document.body.appendChild(s);
+            setTimeout(() => { s.style.top = "110vh"; }, 10);
+            setTimeout(() => { coins += (clickPower*mult); s.remove(); update(); }, 1500);
+        }
+
+        function askCode() {
+            let code = prompt("Введите КОД БОГА:");
+            if(code === "CATGOD2026") document.getElementById('adminTabBtn').style.display = 'inline-block';
         }
 
         function openTab(evt, name) {
@@ -260,13 +233,15 @@
             evt.currentTarget.classList.add('active-btn');
         }
 
-        function openAdmin() { document.getElementById('adminTabBtn').style.display = 'inline-block'; alert("БОГ ПРОСНУЛСЯ"); }
-
         setInterval(() => {
-            coins += (autoCPS * pMult * rMult);
-            if(abilityTime > 0) {
-                abilityTime--;
-                if(abilityTime <= 0) { activeEffect = null; document.body.classList.remove('float-bg'); }
+            coins += (autoCPS * mult * (isFed?2:1));
+            if(feedTime > 0) {
+                feedTime--;
+                if(feedTime <= 0) { isFed = false; document.body.classList.remove('float-bg'); }
+            }
+            if(effectTime > 0) {
+                effectTime--;
+                if(effectTime <= 0) activeEffect = null;
             }
             update();
         }, 1000);
