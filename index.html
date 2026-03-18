@@ -3,316 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cat Clicker: God Edition Pro</title>
+    <title>Cat Clicker: Cosmic God Edition</title>
     <style>
+        :root { --p-color: #6a11cb; --s-color: #2575fc; --gold: #ffd700; }
         body { 
             text-align: center; font-family: 'Segoe UI', sans-serif; 
-            background: #ffe4e1; margin: 0; padding-top: 60px; overflow-x: hidden;
-            transition: background 0.5s; position: relative; min-height: 100vh;
+            background: #0f0c29; color: white; margin: 0; padding-top: 50px;
+            min-height: 100vh; overflow: hidden; transition: 0.5s;
         }
-        .admin-bg { animation: rgbBg 5s infinite linear; }
-        @keyframes rgbBg {
-            0% { background: #ffcccc; } 33% { background: #ccffcc; } 66% { background: #ccccff; } 100% { background: #ffcccc; }
-        }
-        #top-stats {
-            position: fixed; top: 10px; right: 10px; background: rgba(255, 255, 255, 0.9);
-            padding: 10px; border-radius: 15px; text-align: right; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000;
-        }
-        .stat-line { font-size: 14px; color: #d63384; font-weight: bold; }
-        .tab { display: none; padding: 20px; padding-bottom: 80px; }
-        .active { display: block; }
-        button { 
-            padding: 12px 20px; margin: 8px; cursor: pointer; background: #ff69b4; 
-            color: white; border: none; border-radius: 10px; font-weight: bold; transition: 0.2s;
-        }
-        button:active { transform: scale(0.95); }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        .stats { font-size: 24px; color: #d63384; margin: 10px; font-weight: bold; }
-        #cat-farm { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin: 20px auto; min-height: 200px; align-items: center; }
-        #cat { width: 180px; cursor: pointer; touch-action: manipulation; user-select: none; transition: transform 0.1s; z-index: 10; position: relative; }
-        .cat-mini { width: 50px; height: 50px; object-fit: contain; animation: bounce 2s infinite ease-in-out; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         
-        /* Эффект дождя (ГИГАНТСКИЕ КОТЫ) */
-        .rain-cat {
-            position: fixed; top: -300px; width: 300px; height: 300px; /* ГИГАНТЫ */
-            pointer-events: none; z-index: 5000; animation: fall linear forwards;
-            opacity: 0.8;
-        }
-        @keyframes fall {
-            to { transform: translateY(130vh) rotate(180deg); }
+        /* ЭФФЕКТ ПЛАВАЮЩЕГО ФОНА */
+        .float-bg { animation: floating 3s infinite ease-in-out; }
+        @keyframes floating {
+            0%, 100% { background-position: 0% 50%; filter: hue-rotate(0deg); transform: scale(1); }
+            50% { background-position: 100% 50%; filter: hue-rotate(45deg); transform: scale(1.05); }
         }
 
-        /* Эффект покупки (ВЗРЫВ КОТОВ) */
-        .buy-particle {
-            position: fixed; width: 30px; height: 30px;
-            pointer-events: none; z-index: 6000; animation: explode 1s ease-out forwards;
+        #top-ui {
+            position: fixed; top: 0; width: 100%; background: rgba(0,0,0,0.8);
+            display: flex; justify-content: space-around; padding: 10px 0; z-index: 100;
+            border-bottom: 2px solid var(--p-color);
         }
-        @keyframes explode {
-            0% { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        .stat-box { font-weight: bold; font-size: 13px; color: #00d2ff; }
+
+        #coinsDisplay { font-size: 45px; font-weight: bold; text-shadow: 0 0 20px var(--s-color); margin: 15px 0; }
+        
+        #cat-farm { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; min-height: 200px; }
+        #cat { width: 180px; transition: 0.1s; cursor: pointer; filter: drop-shadow(0 0 15px var(--p-color)); user-select: none; z-index: 10; }
+        #cat:active { transform: scale(0.8); }
+
+        .tab-btn { background: #1f1c2c; border: 1px solid var(--s-color); color: white; padding: 8px 12px; margin: 2px; border-radius: 5px; cursor: pointer; }
+        .active-btn { background: var(--p-color); border-color: white; }
+        .tab-content { display: none; padding: 15px; max-width: 450px; margin: 0 auto; background: rgba(0,0,0,0.4); border-radius: 15px; }
+        .active-tab { display: block; }
+
+        .upgrade-card {
+            background: rgba(255,255,255,0.05); margin: 8px 0; padding: 12px;
+            border-radius: 10px; border-left: 4px solid var(--s-color);
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        .click-effect { position: absolute; color: #ff1493; font-weight: bold; font-size: 24px; pointer-events: none; animation: flyUp 0.8s forwards; z-index: 9999; }
-        @keyframes flyUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
+        /* ЧАСТИЦЫ И ЗВЕЗДЫ */
+        .star { position: fixed; width: 25px; pointer-events: none; z-index: 5; animation: starFall 1.5s linear forwards; }
+        @keyframes starFall { to { transform: translateY(110vh) rotate(540deg); opacity: 0; } }
         
-        #secret-paw { position: fixed; bottom: 10px; left: 10px; width: 30px; opacity: 0.2; cursor: pointer; z-index: 2000; }
-        #puzzle-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; justify-content: center; align-items: center; }
-        #puzzle-container { background: white; padding: 20px; border-radius: 20px; text-align: center; }
-        .color-btn { width: 45px; height: 45px; border-radius: 8px; margin: 5px; cursor: pointer; display: inline-block; border: 1px solid #000; }
-        .admin-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .click-txt { position: fixed; pointer-events: none; font-weight: bold; z-index: 100; animation: flyUp 0.7s forwards; }
+        @keyframes flyUp { to { transform: translateY(-80px); opacity: 0; } }
+
+        .shockwave { position: fixed; border: 3px solid #00ff88; border-radius: 50%; pointer-events: none; z-index: 99; animation: shock 0.4s ease-out forwards; }
+        @keyframes shock { 0% { width: 0; height: 0; opacity: 1; } 100% { width: 400px; height: 400px; opacity: 0; margin-left: -200px; margin-top: -200px; } }
+
+        #secret-menu { display: none; border: 2px solid var(--gold); background: #222; padding: 15px; margin-top: 10px; border-radius: 10px; }
+        #secret-paw { position: fixed; bottom: 10px; left: 10px; width: 30px; opacity: 0.1; cursor: pointer; }
     </style>
 </head>
 <body id="mainBody">
 
-    <div id="top-stats">
-        <div class="stat-line">Множитель: x<span id="totalMult">1.0</span></div>
-        <div class="stat-line">Доход: <span id="cpsDisplay">0</span>/сек</div>
+    <div id="top-ui">
+        <div class="stat-box">⚔️ Сила: <span id="powerStat">1</span></div>
+        <div class="stat-box">🤖 Авто: <span id="autoStat">0</span>/с</div>
+        <div class="stat-box" style="color:var(--gold)">🌀 Мульти: x<span id="multStat">1.0</span></div>
+        <div class="stat-box">🕒 Эффект: <span id="timerStat">нет</span></div>
     </div>
 
-    <h1>🐾 Cat Clicker Pro 🐾</h1>
-    <div class="stats">Коины: <span id="coinsDisplay">0</span></div>
-    
+    <div id="coinsDisplay">0</div>
+
     <div id="cat-farm">
-        <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" alt="Кот">
+        <img id="cat" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" onmousedown="handleTap(event)">
     </div>
-    
+
     <div class="tabs-menu">
-        <button onclick="showTab('upgrades')">Клики</button>
-        <button onclick="showTab('auto')">Авто</button>
-        <button onclick="showTab('special')">👑 Король</button>
-        <button onclick="showTab('prestige')">Перерождение</button>
-        <button id="adminTabBtn" onclick="showTab('admin')" style="display:none; background: #333; border: 2px solid gold;">🛠 АДМИН</button>
+        <button class="tab-btn active-btn" onclick="openTab(event, 'shop')">Магазин</button>
+        <button class="tab-btn" onclick="openTab(event, 'cosmos')">🌌 Космос</button>
+        <button class="tab-btn" onclick="openTab(event, 'prestige')">✨ Дух</button>
+        <button id="adminTabBtn" class="tab-btn" style="display:none; color: #ff4757;" onclick="openTab(event, 'admin')">🛠 БОГ</button>
     </div>
 
-    <div id="upgrades" class="tab active">
-        <button onclick="buyUpgrade('click', 1, 'priceClick1', 1.15)">+1 сила (<span id="priceClick1">10</span>)</button>
-        <button onclick="buyUpgrade('click', 10, 'priceClick10', 1.15)">+10 сила (<span id="priceClick10">100</span>)</button>
-        <button onclick="buyUpgrade('click', 1000, 'priceClick1000', 1.5)">+1000 сила (<span id="priceClick1000">10000</span>)</button>
-    </div>
-    
-    <div id="auto" class="tab">
-        <button onclick="buyUpgrade('auto', 1, 'priceAuto1', 1.2)">+1/сек (<span id="priceAuto1">100</span>)</button>
-        <button onclick="buyUpgrade('auto', 10, 'priceAuto10', 1.2)">+10/сек (<span id="priceAuto10">1000</span>)</button>
-        <button onclick="buyUpgrade('auto', 100, 'priceAuto100', 1.2)">+100/сек (<span id="priceAuto100">10000</span>)</button>
-    </div>
-    
-    <div id="special" class="tab">
-        <h3>Королевский режим 👑</h3>
-        <p>Множитель x5 и +30 к силе клика</p>
-        <button id="royalBtn" onclick="buyRoyal()">Купить за 50,000 🐾</button>
-    </div>
-    
-    <div id="prestige" class="tab">
-        <button id="prestigeBtn" onclick="doPrestige()" disabled>Перерождение (100к 🐾)</button>
+    <div id="shop" class="tab-content active-tab">
+        <div class="upgrade-card"><span>+1 Сила</span><button onclick="buy('click', 1, 'pC1', 1.15, event)">💰 <span id="pC1">10</span></button></div>
+        <div class="upgrade-card"><span>+1 Авто (Дешево)</span><button onclick="buy('auto', 1, 'pA1', 1.12, event)">💰 <span id="pA1">50</span></button></div>
+        <div class="upgrade-card"><span>+10 Авто</span><button onclick="buy('auto', 10, 'pA10', 1.15, event)">💰 <span id="pA10">500</span></button></div>
     </div>
 
-    <div id="admin" class="tab">
-        <div style="background: white; padding: 20px; border-radius: 20px; border: 4px solid gold;">
-            <h2 style="color: gold; text-shadow: 1px 1px 2px #000;">⚡ ПАНЕЛЬ БОГА ⚡</h2>
-            <div class="admin-controls">
-                <button onclick="startCatRain()" style="background: linear-gradient(to bottom, #ff00cc, #333); grid-column: span 2;">🐱 ГИГАНТСКИЙ ДОЖДЬ 🐱</button>
-                <button onclick="coins += 1000000; update();" style="background: #444;">+1М Коинов</button>
-                <button onclick="prestigeMult += 10; update();" style="background: #444;">+10x Мульт</button>
-                <button onclick="for(let k in prices) prices[k] = 0; update();" style="background: #444;">Шоп 0🐾</button>
-                <button onclick="document.getElementById('mainBody').classList.toggle('admin-bg');" style="background: #444;">RGB Фон</button>
-            </div>
+    <div id="cosmos" class="tab-content">
+        <h3>Космические способности (1 мин)</h3>
+        <p>Нужно 500 кликов для активации</p>
+        <div class="upgrade-card">
+            <span>🚀 Гипер-Тап (x2 скорость + фон)</span>
+            <button onclick="activateCosmos('hyper')" id="btnHyper">ПУСК</button>
         </div>
+        <div class="upgrade-card">
+            <span>🕳️ Черная Дыра (20% Шанс Free)</span>
+            <button onclick="activateCosmos('hole')" id="btnHole">ПУСК</button>
+        </div>
+        <div class="upgrade-card">
+            <span>🌟 Звездопад (Бесконечные звезды)</span>
+            <button onclick="activateCosmos('stars')" id="btnStars">ПУСК</button>
+        </div>
+    </div>
+
+    <div id="prestige" class="tab-content">
+        <div id="millionaireUI" style="display:none;">
+            <h3 style="color:var(--gold)">🏆 Меню Миллионера</h3>
+            <button onclick="coins += 50000000" style="background:gold; color:black;">ВЫДАТЬ 50 МЛН</button>
+            <button onclick="pMult += 50">+50 МУЛЬТИ</button>
+        </div>
+        <div id="normalPrestige">
+            <p>Перерождение доступно от 100к</p>
+            <button id="prestigeBtn" style="width:100%; padding:15px;" onclick="prestige()" disabled>СБРОС</button>
+        </div>
+    </div>
+
+    <div id="admin" class="tab-content">
+        <button onclick="coins += 100000000; update();">MAX MONEY</button>
+        <button onclick="document.body.classList.toggle('float-bg')">ТЕСТ ФОНА</button>
     </div>
 
     <img id="secret-paw" src="https://cdn-icons-png.flaticon.com/512/36/36467.png">
 
-    <div id="puzzle-overlay">
-        <div id="puzzle-container">
-            <h3>Цветовой код доступа</h3>
-            <div id="puzzle-btns"></div>
-            <button onclick="document.getElementById('puzzle-overlay').style.display='none'">Отмена</button>
-        </div>
-    </div>
-
     <script>
-        let coins = 0;
-        let clickPower = 1;
-        let autoCPS = 0;
-        let royalMult = 1;
-        let royalBonus = 0;
-        let prestigeMult = 1;
-        let isRainActive = false;
-        let prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
-        
-        const puzzleCorrect = ['red', 'blue', 'purple'];
-        let puzzleSequence = [];
-        const colorPalette = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'pink', 'cyan', 'lime', 'brown'];
+        let coins = 0, clickPower = 1, autoCPS = 0, pMult = 1, totalTaps = 0;
+        let activeEffect = null, timeLeft = 0;
+        let prices = { pC1: 10, pA1: 50, pA10: 500 };
+        const colors = ['#FF5733', '#33FF57', '#3357FF', '#FFD700', '#FF33A1', '#9B59B6'];
 
         function update() {
-            document.getElementById('coinsDisplay').innerText = Math.floor(coins);
-            document.getElementById('totalMult').innerText = (royalMult * prestigeMult * (isRainActive ? 100 : 1)).toFixed(1);
-            document.getElementById('cpsDisplay').innerText = isRainActive ? autoCPS * 10 : autoCPS;
+            document.getElementById('coinsDisplay').innerText = Math.floor(coins).toLocaleString();
+            document.getElementById('powerStat').innerText = (activeEffect === 'hyper' ? clickPower * 2 : clickPower);
+            document.getElementById('autoStat').innerText = autoCPS;
+            document.getElementById('multStat').innerText = pMult.toFixed(1);
+            document.getElementById('timerStat').innerText = timeLeft > 0 ? timeLeft + "с" : "нет";
+            
             document.getElementById('prestigeBtn').disabled = coins < 100000;
-            for (let key in prices) { if(document.getElementById(key)) document.getElementById(key).innerText = Math.floor(prices[key]); }
+            if(coins >= 100000000) document.getElementById('millionaireUI').style.display = 'block';
+
+            for(let k in prices) if(document.getElementById(k)) document.getElementById(k).innerText = Math.floor(prices[k]);
+            
+            // Кнопки космоса
+            document.getElementById('btnHyper').disabled = totalTaps < 500 || timeLeft > 0;
+            document.getElementById('btnHole').disabled = totalTaps < 500 || timeLeft > 0;
+            document.getElementById('btnStars').disabled = totalTaps < 500 || timeLeft > 0;
         }
 
-        document.getElementById('cat').onclick = (e) => {
-            let rainBonus = isRainActive ? 100 : 1;
-            let gain = (clickPower + royalBonus) * royalMult * prestigeMult * rainBonus;
+        function handleTap(e) {
+            let mult = (activeEffect === 'hyper' ? 2 : 1);
+            let gain = clickPower * pMult * mult;
+            
             coins += gain;
+            totalTaps++;
             
-            const effect = document.createElement('div');
-            effect.className = 'click-effect';
-            effect.style.left = e.pageX + 'px'; effect.style.top = e.pageY + 'px';
-            effect.innerText = "+" + Math.floor(gain);
-            document.body.appendChild(effect);
-            setTimeout(() => effect.remove(), 800);
+            createTxt(e.clientX, e.clientY, "+" + Math.floor(gain), "#00d2ff");
+            if(activeEffect === 'stars' || Math.random() > 0.7) spawnStar();
+
             update();
-        };
-
-        // ЭФФЕКТ ВЗРЫВА КОТОВ ПРИ ПОКУПКЕ
-        function createConfirmEffect(cost) {
-            // Количество котов зависит от цены (минимум 3, максимум 30)
-            let count = Math.min(30, Math.max(3, Math.floor(cost / 50)));
-            
-            for (let i = 0; i < count; i++) {
-                const p = document.createElement('img');
-                p.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
-                p.className = 'buy-particle';
-                
-                // Центр экрана
-                p.style.left = "50%";
-                p.style.top = "50%";
-                
-                // Случайное направление разлета
-                let tx = (Math.random() - 0.5) * 400 + "px";
-                let ty = (Math.random() - 0.5) * 400 + "px";
-                p.style.setProperty('--tx', tx);
-                p.style.setProperty('--ty', ty);
-                
-                // Случайная задержка
-                p.style.animationDelay = (Math.random() * 0.2) + "s";
-
-                document.body.appendChild(p);
-                setTimeout(() => p.remove(), 1200); // Удаляем через секунду
-            }
         }
 
-        function buyUpgrade(type, amount, priceKey, growth) {
-            let cost = prices[priceKey];
-            if (coins >= cost) {
-                coins -= cost;
+        function spawnStar() {
+            const s = document.createElement('img');
+            s.src = "https://cdn-icons-png.flaticon.com/512/1828/1828884.png";
+            s.className = 'star';
+            s.style.left = Math.random() * 95 + "vw";
+            s.style.top = "-50px";
+            document.body.appendChild(s);
+            setTimeout(() => {
+                coins += (clickPower * pMult);
+                s.remove();
+                update();
+            }, 1500);
+        }
+
+        function buy(type, amount, key, growth, e) {
+            let cost = prices[key];
+            let isFree = (activeEffect === 'hole' && Math.random() < 0.20);
+
+            if (coins >= cost || isFree) {
+                if(!isFree) coins -= cost;
+                else createTxt(e.clientX, e.clientY, "FREE!", "#00ff88");
+
                 if (type === 'click') clickPower += amount;
                 else autoCPS += amount;
+                prices[key] *= growth;
                 
-                // Запускаем эффект разлета котов
-                createConfirmEffect(cost);
-                
-                prices[priceKey] *= growth;
+                showShockwave(e.clientX, e.clientY);
                 update();
             }
         }
 
-        function buyRoyal() {
-            let cost = 50000;
-            if (coins >= cost) { 
-                coins -= cost; royalMult = 5; royalBonus = 30; 
-                document.getElementById('royalBtn').disabled = true;
-                document.getElementById('royalBtn').innerText = "КОРОЛЬ АКТИВИРОВАН";
-                
-                // Мега-взрыв котов для королевского режима
-                createConfirmEffect(cost);
-                
-                update(); 
-            }
-        }
-
-        function doPrestige() {
-            if (coins >= 100000) {
-                coins = 0; clickPower = 1; autoCPS = 0; royalMult = 1; royalBonus = 0;
-                prestigeMult += 0.5;
-                prices = { priceClick1: 10, priceClick10: 100, priceClick1000: 10000, priceAuto1: 100, priceAuto10: 1000, priceAuto100: 10000 };
-                document.getElementById('royalBtn').disabled = false;
-                document.getElementById('royalBtn').innerText = "Купить за 50,000 🐾";
-                const mini = document.createElement('img');
-                mini.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
-                mini.className = "cat-mini";
-                document.getElementById('cat-farm').appendChild(mini);
+        function activateCosmos(type) {
+            if(totalTaps >= 500) {
+                totalTaps = 0;
+                activeEffect = type;
+                timeLeft = 60; // 1 минута
+                if(type === 'hyper') document.body.classList.add('float-bg');
                 update();
-                showTab('upgrades');
             }
         }
 
-        // ГИГАНТСКИЙ КОШАЧИЙ ДОЖДЬ
-        function startCatRain() {
-            if(isRainActive) return;
-            isRainActive = true;
+        function prestige() {
+            pMult += 1;
+            coins = 0; clickPower = 1; autoCPS = 0; totalTaps = 0;
+            prices = { pC1: 10, pA1: 50, pA10: 500 };
+            document.body.classList.remove('float-bg');
             update();
-            
-            // Частота появления гигантов чуть меньше, чтобы не перекрыть всё
-            let rainInterval = setInterval(() => {
-                const c = document.createElement('img');
-                c.src = "https://cdn-icons-png.flaticon.com/512/616/616430.png";
-                c.className = 'rain-cat';
-                c.style.left = (Math.random() * 80) + "vw"; // Чтобы не вылезали за края
-                c.style.animationDuration = (Math.random() * 3 + 2) + "s"; // Разная скорость падения
-                document.body.appendChild(c);
-                setTimeout(() => c.remove(), 5000); // Удаляем после пролета
-            }, 300); // Раз в 0.3 секунды падает гигант
+        }
 
-            // Бонус пассивных коинов во время дождя (5% в сек)
-            let bonusInterval = setInterval(() => {
-                coins += (coins * 0.05);
-                update();
-            }, 1000);
+        function createTxt(x, y, txt, color) {
+            const div = document.createElement('div');
+            div.className = 'click-txt';
+            div.innerText = txt;
+            div.style.left = x + 'px';
+            div.style.top = y + 'px';
+            div.style.color = color;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 700);
+        }
 
-            setTimeout(() => {
-                clearInterval(rainInterval);
-                clearInterval(bonusInterval);
-                isRainActive = false;
-                update();
-                alert("Гигантский дождь закончился!");
-            }, 15000); // Длится 15 секунд
+        function showShockwave(x, y) {
+            const s = document.createElement('div');
+            s.className = 'shockwave';
+            s.style.left = x + 'px';
+            s.style.top = y + 'px';
+            document.body.appendChild(s);
+            setTimeout(() => s.remove(), 400);
+        }
+
+        function openTab(evt, name) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-btn'));
+            document.getElementById(name).classList.add('active-tab');
+            evt.currentTarget.classList.add('active-btn');
         }
 
         document.getElementById('secret-paw').onclick = () => {
-            puzzleSequence = [];
-            document.getElementById('puzzle-overlay').style.display = 'flex';
-            const container = document.getElementById('puzzle-btns');
-            container.innerHTML = '';
-            colorPalette.forEach(c => {
-                const b = document.createElement('div');
-                b.className = 'color-btn'; b.style.background = c;
-                b.onclick = () => {
-                    puzzleSequence.push(c);
-                    if(puzzleSequence.length === 3) {
-                        if(JSON.stringify(puzzleSequence) === JSON.stringify(puzzleCorrect)) {
-                            document.getElementById('adminTabBtn').style.display = 'inline-block';
-                            showTab('admin');
-                        }
-                        document.getElementById('puzzle-overlay').style.display = 'none';
-                    }
-                };
-                container.appendChild(b);
-            });
+            document.getElementById('adminTabBtn').style.display = 'inline-block';
         };
 
-        function showTab(id) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        setInterval(() => { 
-            let rainBoost = isRainActive ? 10 : 1;
-            coins += (autoCPS * rainBoost); 
-            update(); 
+        setInterval(() => {
+            coins += autoCPS * pMult;
+            if(timeLeft > 0) {
+                timeLeft--;
+                if(timeLeft <= 0) {
+                    activeEffect = null;
+                    document.body.classList.remove('float-bg');
+                }
+            }
+            update();
         }, 1000);
-        
+
         update();
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
