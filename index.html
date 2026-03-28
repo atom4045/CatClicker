@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Space Cat Clicker: Ultimate</title>
+    <title>Original Cat Clicker: Cosmic God Mode</title>
     <style>
         :root {
             --p: #6a11cb; --b: #2575fc; --g: #ffd700;
             --red: #ff4757; --green: #2ecc71; --blue: #3498db;
         }
         body {
-            margin: 0; background: #050510; color: white;
-            font-family: 'Segoe UI', Arial, sans-serif; text-align: center;
+            margin: 0; background: #020205; color: white;
+            font-family: 'Arial', sans-serif; text-align: center;
             overflow: hidden; height: 100vh;
-            background-image: radial-gradient(circle at 50% 50%, #111 0%, #050510 100%);
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(106, 17, 203, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(37, 117, 252, 0.2) 0%, transparent 40%);
         }
         canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1; }
         .ui { position: relative; z-index: 10; padding-top: 80px; height: 100vh; overflow-y: auto; pointer-events: none; }
@@ -21,60 +23,51 @@
 
         /* ЛАМПОЧКИ (ВХОД) */
         .lights { position: fixed; top: 15px; left: 15px; display: flex; gap: 10px; z-index: 10000; }
-        .light { width: 25px; height: 25px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); transition: 0.3s; }
-        .l-red { background: var(--red); box-shadow: 0 0 10px var(--red); }
-        .l-green { background: var(--green); box-shadow: 0 0 10px var(--green); }
-        .l-blue { background: var(--blue); box-shadow: 0 0 10px var(--blue); }
+        .light { width: 25px; height: 25px; border-radius: 50%; cursor: pointer; border: 2px solid white; }
+        .l-red { background: var(--red); } .l-green { background: var(--green); } .l-blue { background: var(--blue); }
 
-        /* ПАНЕЛЬ СТАТИСТИКИ */
+        /* СТАТИСТИКА */
         .top-bar {
-            position: fixed; top: 0; width: 100%; height: 75px;
-            background: rgba(0,0,0,0.9); display: flex; justify-content: space-around;
+            position: fixed; top: 0; width: 100%; height: 70px;
+            background: rgba(0,0,0,0.85); display: flex; justify-content: space-around;
             align-items: center; border-bottom: 2px solid var(--p); z-index: 1000;
         }
-        .st b { display: block; font-size: 20px; color: var(--blue); }
+        .st b { display: block; font-size: 18px; color: var(--blue); }
 
-        #coins { font-size: 50px; font-weight: 900; color: var(--g); text-shadow: 0 0 20px orange; margin: 15px 0; }
-        #cat { width: 220px; cursor: pointer; transition: 0.1s; filter: drop-shadow(0 0 20px var(--p)); margin: 20px; }
-        #cat:active { transform: scale(0.9) rotate(-3deg); }
+        #coins { font-size: 55px; font-weight: 900; color: var(--g); text-shadow: 0 0 20px orange; margin: 10px 0; }
+        #cat { width: 210px; cursor: pointer; transition: 0.1s; filter: drop-shadow(0 0 15px var(--p)); }
+        #cat:active { transform: scale(0.85); }
 
         /* ВКЛАДКИ */
-        .tabs { display: flex; justify-content: center; gap: 10px; margin: 20px; }
+        .tabs { display: flex; justify-content: center; gap: 8px; margin: 15px; flex-wrap: wrap; }
         .t-btn {
-            background: #1a1a2e; border: 1px solid var(--blue); color: white;
-            padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: bold;
+            background: #111; border: 1px solid var(--blue); color: white;
+            padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold;
         }
-        .t-btn.active { background: var(--p); border-color: white; box-shadow: 0 0 15px var(--p); }
+        .t-btn.active { background: var(--p); border-color: white; }
 
         /* СЕКЦИИ */
-        .sec { display: none; max-width: 500px; margin: 0 auto 150px; padding: 20px; background: rgba(0,0,0,0.8); border-radius: 20px; border: 1px solid #333; }
-        .active-sec { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .sec { display: none; max-width: 480px; margin: 0 auto 120px; padding: 15px; background: rgba(0,0,0,0.8); border-radius: 15px; border: 1px solid #333; }
+        .active-sec { display: block; }
 
-        /* МАГАЗИН */
+        /* КАРТОЧКИ УЛУЧШЕНИЙ */
         .item {
-            background: rgba(255,255,255,0.05); margin-bottom: 12px; padding: 15px;
-            border-radius: 12px; display: flex; justify-content: space-between; align-items: center;
-            border-left: 5px solid var(--red); transition: 0.2s;
+            background: rgba(255,255,255,0.05); margin-bottom: 10px; padding: 12px;
+            border-radius: 10px; display: flex; justify-content: space-between; align-items: center;
+            border-left: 4px solid var(--red);
         }
-        .item:hover { background: rgba(255,255,255,0.1); }
         .item.auto { border-left-color: var(--green); }
-        .buy-btn { background: var(--p); border: none; color: white; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .buy-btn:disabled { background: #444; opacity: 0.5; }
-
-        /* КОРОЛЕВСКИЙ РЕЖИМ */
-        #royal-btn {
-            background: linear-gradient(45deg, #f1c40f, #e67e22); color: black;
-            width: 100%; margin-bottom: 15px; display: none; border: none; padding: 15px; font-size: 18px;
-        }
+        .buy-btn { background: var(--p); border: none; color: white; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; min-width: 80px; }
+        .buy-btn:disabled { background: #444; }
 
         /* АДМИНКА */
-        .adm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .adm-btn {
-            background: #111; border: 2px solid var(--red); color: var(--red);
-            padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold;
+            background: #000; border: 2px solid var(--red); color: var(--red);
+            padding: 12px; margin: 5px; width: 45%; cursor: pointer; font-weight: bold; border-radius: 5px;
         }
-        .adm-btn:hover { background: var(--red); color: white; }
+        .adm-btn:hover { background: var(--red); color: black; }
+        
+        #royal-zone { background: linear-gradient(45deg, #000, #1a0a33); border: 2px solid gold; padding: 15px; border-radius: 15px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -88,9 +81,9 @@
     </div>
 
     <div class="top-bar">
-        <div class="st">КЛИК<b id="st-pwr">1</b></div>
-        <div class="st">АВТО<b id="st-auto">0</b></div>
-        <div class="st">MULT<b id="st-mult">x1.0</b></div>
+        <div class="st">СИЛА КЛИКА<b id="st-pwr">1</b></div>
+        <div class="st">АВТО-ДОХОД<b id="st-auto">0</b></div>
+        <div class="st">МУЛЬТИПЛЕЕР<b id="st-mult">x1.0</b></div>
     </div>
 
     <div class="ui">
@@ -99,59 +92,61 @@
 
         <div class="tabs inter">
             <button class="t-btn active" onclick="showTab(event, 'shop')">🛒 МАГАЗИН</button>
-            <button class="t-btn" onclick="showTab(event, 'spirit')">✨ ДУХ</button>
-            <button id="god-tab" class="t-btn" style="display:none; color:lime;" onclick="showTab(event, 'admin')">🛠 БОГ</button>
+            <button class="t-btn" onclick="showTab(event, 'spirit')">✨ ПЕРЕРОЖДЕНИЕ</button>
+            <button id="god-tab-btn" class="t-btn" style="display:none; color:lime;" onclick="showTab(event, 'god-mode')">👑 РЕЖИМ БОГА</button>
         </div>
 
         <div id="shop" class="sec active-sec inter">
-            <button id="royal-btn" class="inter" onclick="toggleRoyal()">👑 КОРОЛЕВСКИЙ РЕЖИМ (x10)</button>
-            
-            <h3>Клики</h3>
-            <div class="item"><div><b>Лапа</b><p>+1 к клику</p></div><button class="buy-btn" onclick="buy('c',1,'p1',1.15)">💰 <span id="p1">10</span></button></div>
-            <div class="item"><div><b>Мега-Лапа</b><p>+10 к клику</p></div><button class="buy-btn" onclick="buy('c',10,'p10',1.2)">💰 <span id="p10">150</span></button></div>
-            <div class="item"><div><b>Ультра-Лапа</b><p>+100 к клику</p></div><button class="buy-btn" onclick="buy('c',100,'p100',1.25)">💰 <span id="p100">1500</span></button></div>
-            <div class="item"><div><b>Бог-Кот</b><p>+1000 к клику</p></div><button class="buy-btn" onclick="buy('c',1000,'p1000',1.3)">💰 <span id="p1000">20000</span></button></div>
+            <h3 style="color:var(--red)">Прокачка Клика</h3>
+            <div class="item"><div><b>+1 Клик</b><p>Обычная лапка</p></div><button class="buy-btn" onclick="buy('c',1,'p1',1.15)">💰 <span id="p1">10</span></button></div>
+            <div class="item"><div><b>+10 Клик</b><p>Мега лапка</p></div><button class="buy-btn" onclick="buy('c',10,'p10',1.2)">💰 <span id="p10">150</span></button></div>
+            <div class="item"><div><b>+100 Клик</b><p>Ультра лапка</p></div><button class="buy-btn" onclick="buy('c',100,'p100',1.25)">💰 <span id="p100">1500</span></button></div>
+            <div class="item"><div><b>+1000 Клик</b><p>Бог-Кот</p></div><button class="buy-btn" onclick="buy('c',1000,'p1000',1.3)">💰 <span id="p1000">20000</span></button></div>
 
-            <h3>Автокликеры (ДЕШЕВЛЕ!)</h3>
-            <div class="item auto"><div><b>Кот-Бот</b><p>+1/сек</p></div><button class="buy-btn" onclick="buy('a',1,'a1',1.15)">💰 <span id="a1">25</span></button></div>
-            <div class="item auto"><div><b>Кото-Ферма</b><p>+10/сек</p></div><button class="buy-btn" onclick="buy('a',10,'a10',1.2)">💰 <span id="a10">350</span></button></div>
-            <div class="item auto"><div><b>Кото-Завод</b><p>+100/сек</p></div><button class="buy-btn" onclick="buy('a',100,'a100',1.25)">💰 <span id="a100">4000</span></button></div>
-            <div class="item auto"><div><b>Галактика Котов</b><p>+1000/сек</p></div><button class="buy-btn" onclick="buy('a',1000,'a1000',1.3)">💰 <span id="a1000">45000</span></button></div>
+            <h3 style="color:var(--green)">Автокликеры (ДЕШЕВО!)</h3>
+            <div class="item auto"><div><b>Кот-Бот</b><p>+1/сек</p></div><button class="buy-btn" onclick="buy('a',1,'a1',1.15)">💰 <span id="a1">15</span></button></div>
+            <div class="item auto"><div><b>Кото-Ферма</b><p>+10/сек</p></div><button class="buy-btn" onclick="buy('a',10,'a10',1.2)">💰 <span id="a10">250</span></button></div>
+            <div class="item auto"><div><b>Кото-Завод</b><p>+100/сек</p></div><button class="buy-btn" onclick="buy('a',100,'a100',1.25)">💰 <span id="a100">3000</span></button></div>
+            <div class="item auto"><div><b>Галактика Котов</b><p>+1000/сек</p></div><button class="buy-btn" onclick="buy('a',1000,'a1000',1.3)">💰 <span id="a1000">40000</span></button></div>
         </div>
 
         <div id="spirit" class="sec inter">
             <h2>✨ Перерождение</h2>
-            <p>Текущий множитель: <b id="cur-mult">1.0</b></p>
-            <button class="t-btn" style="width:100%" onclick="prestige()">СБРОС ЗА 100,000</button>
+            <p>Ваш текущий множитель: <b id="cur-mult">1.0</b></p>
+            <button class="t-btn" style="width:100%; height:60px; font-size:20px;" onclick="prestige()">СБРОСИТЬ ВСЁ (100k)</button>
+            <p style="font-size:12px; color:gray; margin-top:10px;">Вы получите +1.0 к множителю за каждые 100к монет.</p>
         </div>
 
-        <div id="admin" class="sec inter">
-            <h2 style="color:red">🛠 ПАНЕЛЬ ТВОРЦА</h2>
-            <div class="adm-grid">
-                <button class="adm-btn" onclick="coins+=1000000000; update()">+1 МЛРД</button>
-                <button class="adm-btn" onclick="mult+=10; update()">+10 ПЕРЕР.</button>
-                <button class="adm-btn" id="free-btn" onclick="toggleFree()">FREE: OFF</button>
-                <button class="adm-btn" onclick="catFall()">🐱 ВОДОПАД</button>
-                <button class="adm-btn" onclick="autoP = !autoP">AUTO SPIRIT</button>
-                <button class="adm-btn" onclick="location.reload()">СБРОС ВСЕГО</button>
+        <div id="god-mode" class="sec inter">
+            <h2 style="color:gold;">🛠 ПАНЕЛЬ ТВОРЦА</h2>
+            <div id="royal-zone">
+                <h3 style="margin:0; color:gold;">КОРОЛЕВСКИЙ РЕЖИМ</h3>
+                <p>Множитель x10 на всё!</p>
+                <button class="t-btn" id="rb-toggle" style="width:100%; border-color:gold;" onclick="toggleRoyal()">ВКЛЮЧИТЬ x10</button>
             </div>
+            <br>
+            <button class="adm-btn" onclick="coins+=1000000000; update()">+1 МИЛЛИАРД</button>
+            <button class="adm-btn" onclick="mult+=10; update()">+10 ПЕРЕР.</button>
+            <button class="adm-btn" id="f-btn" onclick="isFree=!isFree; update()">FREE: OFF</button>
+            <button class="adm-btn" onclick="catFall()">🐱 ВОДОПАД</button>
+            <button class="adm-btn" onclick="autoP=!autoP; alert('Авто-сброс: '+(autoP?'ВКЛ':'ВЫКЛ'))">AUTO SPIRIT</button>
+            <button class="adm-btn" onclick="location.reload()">RELOAD</button>
         </div>
     </div>
 
     <script>
         let coins=0, pwr=1, auto=0, mult=1, isFree=false, royal=false, autoP=false;
-        let pr = { p1:10, p10:150, p100:1500, p1000:20000, a1:25, a10:350, a100:4000, a1000:45000 };
-        let inputCode = [];
+        let pr = { p1:10, p10:150, p100:1500, p1000:20000, a1:15, a10:250, a100:3000, a1000:40000 };
+        let code = [];
 
         function press(color) {
-            inputCode.push(color);
-            if(inputCode.join(',').includes('blue,green,red')) {
-                document.getElementById('god-tab').style.display = 'block';
-                document.getElementById('royal-btn').style.display = 'block';
-                alert("РЕЖИМ БОГА АКТИВИРОВАН!");
-                inputCode = [];
+            code.push(color);
+            if(code.join(',').includes('blue,green,red')) {
+                document.getElementById('god-tab-btn').style.display = 'inline-block';
+                alert("РЕЖИМ БОГА ОТКРЫТ!");
+                code = [];
             }
-            if(inputCode.length > 5) inputCode.shift();
+            if(code.length > 5) code.shift();
         }
 
         function update() {
@@ -161,6 +156,8 @@
             document.getElementById('st-auto').innerText = Math.floor(auto * m);
             document.getElementById('st-mult').innerText = 'x' + m.toFixed(1);
             document.getElementById('cur-mult').innerText = mult.toFixed(1);
+            document.getElementById('f-btn').innerText = isFree ? "FREE: ON" : "FREE: OFF";
+            document.getElementById('rb-toggle').innerText = royal ? "ВЫКЛЮЧИТЬ x10" : "ВКЛЮЧИТЬ x10";
             
             for(let k in pr) {
                 let el = document.getElementById(k);
@@ -171,66 +168,60 @@
         function tap(e) {
             let m = mult * (royal ? 10 : 1);
             coins += pwr * m;
-            spawnPart(e.clientX, e.clientY, '🐾');
+            spawnP(e.clientX, e.clientY, '🐾');
             update();
         }
 
-        function buy(type, amt, id, growth) {
+        function buy(t, n, id, g) {
             let cost = isFree ? 0 : pr[id];
             if(coins >= cost) {
                 if(!isFree) coins -= cost;
-                if(type === 'c') pwr += amt; else auto += amt;
-                pr[id] *= growth;
+                if(t==='c') pwr+=n; else auto+=n;
+                pr[id] *= g;
                 update();
             }
-        }
-
-        function toggleFree() { 
-            isFree = !isFree; 
-            document.getElementById('free-btn').innerText = isFree ? "FREE: ON" : "FREE: OFF";
-            update();
         }
 
         function toggleRoyal() { royal = !royal; update(); }
 
         function prestige() {
             if(coins >= 100000) {
-                coins=0; pwr=1; auto=0; mult++;
-                pr = { p1:10, p10:150, p100:1500, p1000:20000, a1:25, a10:350, a100:4000, a1000:45000 };
+                let gain = Math.floor(coins / 100000);
+                mult += gain; coins = 0; pwr = 1; auto = 0;
+                pr = { p1:10, p10:150, p100:1500, p1000:20000, a1:15, a10:250, a100:3000, a1000:40000 };
                 update();
             }
         }
 
         function catFall() {
-            let i = 0;
-            let timer = setInterval(() => {
+            let count = 0;
+            let i = setInterval(() => {
                 coins += 1000000;
-                spawnPart(Math.random() * window.innerWidth, -50, '🐱');
-                i++; if(i > 50) clearInterval(timer);
+                spawnP(Math.random() * window.innerWidth, -50, '🐱');
+                count++; if(count > 60) clearInterval(i);
                 update();
-            }, 100);
+            }, 80);
         }
 
-        // ЭФФЕКТЫ
-        const canvas = document.getElementById('fxCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let particles = [];
+        const cvs = document.getElementById('fxCanvas');
+        const ctx = cvs.getContext('2d');
+        cvs.width = window.innerWidth; cvs.height = window.innerHeight;
+        let parts = [];
 
-        function spawnPart(x, y, char) {
-            particles.push({ x, y, vy: 5, a: 1, text: char });
+        function spawnP(x, y, char) {
+            parts.push({ x, y, vy: 4, a: 1, t: char });
         }
 
-        function animate() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            particles.forEach((p, i) => {
+        function anim() {
+            ctx.clearRect(0,0,cvs.width, cvs.height);
+            parts.forEach((p, i) => {
                 p.y += p.vy; p.a -= 0.02;
                 ctx.globalAlpha = p.a;
-                ctx.font = "30px Arial";
-                ctx.fillText(p.text, p.x, p.y);
-                if(p.a <= 0) particles.splice(i, 1);
+                ctx.font = "35px Arial";
+                ctx.fillText(p.t, p.x, p.y);
+                if(p.a <= 0) parts.splice(i, 1);
             });
-            requestAnimationFrame(animate);
+            requestAnimationFrame(anim);
         }
 
         function showTab(e, id) {
@@ -241,12 +232,13 @@
         }
 
         setInterval(() => {
-            coins += auto * mult * (royal ? 10 : 1);
+            let m = mult * (royal ? 10 : 1);
+            coins += auto * m;
             if(autoP && coins >= 100000) prestige();
             update();
         }, 1000);
 
-        animate(); update();
+        anim(); update();
     </script>
 </body>
 </html>
