@@ -3,230 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cat Clicker: Kawaii Edition 🌸</title>
+    <title>Cosmic Sakura Cat Clicker</title>
     <style>
         :root { 
-            --pink: #ffb7b2; 
-            --purple: #e2b4f5; 
-            --blue: #aaccff; 
-            --gold: #ffdf00; 
-            --bg: #fff0f5; 
-            --text: #5a4f66;
+            --red: #e74c3c; 
+            --blue: #3498db; 
+            --green: #2ecc71; 
+            --gold: #f1c40f; 
+            --space-bg: #030311; 
+            --text-main: #ecf0f1;
         }
         
         body { 
-            margin: 0; padding: 0; background: linear-gradient(135deg, var(--bg), var(--purple)); 
-            color: var(--text); font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif; 
-            text-align: center; overflow: hidden; height: 100vh; user-select: none;
+            margin: 0; padding: 0; 
+            /* Фон: Космическая Сакура (Древняя Япония + Космос) */
+            background: var(--space-bg) radial-gradient(circle at center, #1a0a33 0%, var(--space-bg) 70%);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" opacity="0.3"/><circle cx="20" cy="80" r="0.5" fill="white" opacity="0.2"/><path d="M50 45 A 5 5 0 0 1 55 50 A 5 5 0 0 1 50 55 A 5 5 0 0 1 45 50 A 5 5 0 0 1 50 45 Z" fill="%23e74c3c" opacity="0.05"/></svg>');
+            color: var(--text-main); font-family: 'Verdana', 'Geneva', sans-serif; 
+            text-align: center; overflow: hidden; height: 100vh; user-select: none; transition: 0.5s;
         }
         
         canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1; }
         .ui-layer { position: relative; z-index: 10; padding-top: 85px; height: 100%; overflow-y: auto; pointer-events: none; }
         .interactive { pointer-events: auto; }
 
-        /* КНОПКА БОГА */
+        /* СКРЫТЫЙ ТРИГГЕР БОГА В ВЕРХНЕМ ЛЕВОМ УГЛУ */
         #god-trigger { 
-            position: fixed; top: 10px; left: 10px; width: 35px; height: 35px; 
-            background: rgba(255, 183, 178, 0.5); border-radius: 50%; z-index: 9999; cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; border: 2px dashed #ff9999; 
-            box-shadow: 0 0 10px rgba(255, 183, 178, 0.8); transition: 0.2s;
+            position: fixed; top: 0; left: 0; width: 60px; height: 60px; 
+            background: transparent; z-index: 9999; cursor: pointer;
         }
-        #god-trigger:hover { transform: scale(1.1); background: var(--pink); }
 
-        /* ВЕРХНЯЯ ПАНЕЛЬ */
+        /* ВЕРХНЯЯ ПАНЕЛЬ (RGB) */
         .top-ui { 
             position: fixed; top: 0; width: 100%; height: 75px; 
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(5px);
-            border-bottom: 3px solid var(--pink); display: flex; 
-            justify-content: space-around; align-items: center; z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background: rgba(0, 0, 0, 0.9); border-bottom: 2px solid var(--blue);
+            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
         }
-        .stat { font-size: 12px; font-weight: bold; color: #888; text-transform: uppercase; }
-        .stat b { font-size: 22px; color: var(--text); display: block; }
+        .stat { font-size: 11px; font-weight: bold; color: var(--blue); text-transform: uppercase; letter-spacing: 1px;}
+        .stat b { font-size: 20px; color: var(--text-main); display: block; }
         
-        #coins { font-size: 50px; font-weight: 900; color: #ff8e8b; text-shadow: 2px 2px 0px white; margin: 10px 0; }
+        #coins { font-size: 48px; font-weight: 900; color: var(--gold); text-shadow: 0 0 15px var(--gold); margin: 10px 0; }
         
-        /* КОТИК */
+        /* КУЛЬТОВЫЙ КОТ */
         #main-cat { 
-            width: 220px; cursor: pointer; transition: 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            filter: drop-shadow(0 10px 15px rgba(255, 183, 178, 0.6));
+            width: 210px; cursor: pointer; transition: 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            filter: drop-shadow(0 0 15px var(--blue));
         }
-        #main-cat:active { transform: scale(0.85) rotate(-5deg); }
-        .golden-mode { filter: drop-shadow(0 0 30px var(--gold)) brightness(1.2) sepia(0.5) !important; }
+        #main-cat:active { transform: scale(0.85); }
+        .golden-mode { filter: drop-shadow(0 0 30px var(--gold)) brightness(1.3) sepia(0.5) !important; }
 
-        /* ВКЛАДКИ */
-        .tabs { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 15px 0; padding: 0 10px; }
+        /* ВКЛАДКИ (RGB) */
+        .tabs { display: flex; justify-content: center; gap: 5px; flex-wrap: wrap; margin: 15px 0; padding: 0 10px; }
         .tab-btn { 
-            background: white; border: 2px solid var(--pink); color: var(--text); 
-            padding: 10px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; 
-            transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            background: #111; border: 1px solid var(--red); color: var(--red); 
+            padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s;
         }
-        .tab-btn.active { background: var(--pink); color: white; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(255, 183, 178, 0.5); }
+        .tab-btn.active { background: var(--blue); color: #000; border-color: var(--blue); box-shadow: 0 0 10px var(--blue); }
+        .tab-btn.tab-cosmos { border-color: var(--green); color: var(--green); }
+        .tab-btn.tab-cosmos.active { background: var(--green); color: #000; box-shadow: 0 0 10px var(--green); }
 
         /* СЕКЦИИ */
         .section { 
             display: none; max-width: 450px; margin: 0 auto 100px auto; padding: 15px; 
-            background: rgba(255, 255, 255, 0.6); border-radius: 25px; 
-            border: 2px solid white; box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+            background: rgba(0, 0, 0, 0.8); border-radius: 15px; border: 1px solid #333; 
         }
-        .active-section { display: block; animation: popIn 0.3s ease-out; }
-        @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .active-section { display: block; animation: fadeIn 0.3s forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ЭЛЕМЕНТЫ МАГАЗИНА */
+        /* ЭЛЕМЕНТЫ (Кот-центричные) */
         .item { 
-            background: white; margin-bottom: 10px; padding: 12px 15px; 
-            border-radius: 15px; display: flex; justify-content: space-between; align-items: center; 
-            border-left: 5px solid var(--blue); box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            background: rgba(255,255,255,0.03); margin-bottom: 8px; padding: 12px; 
+            border-radius: 10px; display: flex; justify-content: space-between; align-items: center; 
+            border-left: 4px solid var(--red); 
         }
-        .item b { color: var(--text); font-size: 16px; }
-        .item p { margin: 2px 0 0 0; font-size: 12px; color: #999; }
+        .item.auto-item { border-left-color: var(--blue); }
+        .item.cosmos-item { border-left-color: var(--green); }
+        .item b { color: var(--text-main); font-size: 15px; }
+        .item p { margin: 2px 0 0 0; font-size: 11px; color: #999; }
+        
         .buy-btn { 
-            background: var(--blue); border: none; color: white; padding: 10px 15px; 
-            border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s;
+            background: #222; border: 1px solid var(--red); color: var(--red); padding: 8px 12px; 
+            border-radius: 5px; font-weight: bold; cursor: pointer;
         }
-        .buy-btn:hover { background: #90bbff; transform: scale(1.05); }
+        .buy-btn:hover:not(:disabled) { background: var(--red); color: #000; }
+        .buy-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .item.auto-item .buy-btn { border-color: var(--blue); color: var(--blue); }
+        .item.auto-item .buy-btn:hover:not(:disabled) { background: var(--blue); color: #000; }
+        .item.cosmos-item .buy-btn { border-color: var(--green); color: var(--green); }
+        .item.cosmos-item .buy-btn:hover:not(:disabled) { background: var(--green); color: #000; }
 
-        /* ЧЕРНАЯ ДЫРА (Милая версия) */
+        /* СПОСОБНОСТИ */
+        .ab-desc { text-align: left; font-size: 11px; color: #aaa; margin: 0 0 10px 0; }
+
+        /* ЧЕРНАЯ ДЫРА (Мистическая версия) */
         .black-hole { 
-            position: fixed; top: 50%; left: 50%; width: 350px; height: 350px; 
-            border-radius: 50%; background: radial-gradient(circle, #fff 10%, var(--purple) 50%, transparent 80%); 
-            animation: spin 3s linear infinite; z-index: 0; opacity: 0.4; display: none; transform: translate(-50%, -50%);
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            width: 300px; height: 300px; border-radius: 50%; 
+            background: radial-gradient(circle, #000 30%, var(--mana) 60%, transparent 80%); 
+            animation: spin 3s linear infinite; z-index: 0; opacity: 0.5; display: none; 
         }
         @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        /* СЛУЧАЙНАЯ МЫШКА */
+        /* УЛУЧШЕННАЯ МЫШКА (Видная!) */
         #mouse-event {
-            position: fixed; top: 20%; left: -50px; font-size: 40px; cursor: pointer;
-            z-index: 2000; display: none; transition: transform 0.1s;
+            position: fixed; top: -50px; left: -50px; font-size: 50px; cursor: pointer;
+            z-index: 2000; display: none; filter: drop-shadow(0 0 15px var(--blue));
+            animation: mouseGlow 1s infinite alternate;
         }
-        #mouse-event:active { transform: scale(0.7); }
+        @keyframes mouseGlow { from { opacity: 0.8; } to { opacity: 1; transform: scale(1.1); } }
+        
+        /* АДМИНКА */
+        .admin-btn { background: #000; color: var(--red); border: 2px solid var(--red); padding: 10px; margin: 5px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 45%; }
+        .admin-btn:hover { background: var(--red); color: #000; }
     </style>
 </head>
 <body>
 
     <canvas id="fxCanvas"></canvas>
     <div id="blackHole" class="black-hole"></div>
-    
     <div id="mouse-event" class="interactive" onclick="catchMouse()">🐁</div>
 
-    <div id="god-trigger" class="interactive" onclick="openGod()">🌸</div>
+    <div id="god-trigger" onclick="askGod()"></div>
 
     <div class="top-ui">
-        <div class="stat">СИЛА<b id="st-pwr">1</b></div>
-        <div class="stat">АВТО<b id="st-auto">0</b></div>
+        <div class="stat">УРОН МЯУ<b id="st-pwr">1</b></div>
+        <div class="stat">АВТО-ЛАПКИ<b id="st-auto">0</b></div>
         <div class="stat">КОРМ<b id="st-food">0</b></div>
-        <div class="stat">МНОЖ<b id="st-mult">x1.0</b></div>
+        <div class="stat">КОСМОС MULT<b id="st-mult">x1.0</b></div>
     </div>
 
     <div class="ui-layer">
         <div id="coins" class="interactive">0</div>
-        <img id="main-cat" class="interactive" src="https://cdn-icons-png.flaticon.com/512/364/364218.png" onmousedown="tap(event)">
+        <img id="main-cat" class="interactive" src="https://cdn-icons-png.flaticon.com/512/616/616430.png" onmousedown="tap(event)">
 
         <div class="tabs interactive">
-            <button class="tab-btn active" onclick="showTab(event, 's-shop')">🛍️ Магазин</button>
-            <button class="tab-btn" onclick="showTab(event, 's-cosmos')">✨ Магия</button>
-            <button class="tab-btn" onclick="showTab(event, 's-kitchen')">🍼 Кухня</button>
-            <button class="tab-btn" onclick="showTab(event, 's-spirit')">💖 Дух</button>
-            <button id="god-tab" class="tab-btn" style="display:none; background:var(--pink); color:white;" onclick="showTab(event, 's-god')">⚙️ БОГ</button>
+            <button class="tab-btn active" onclick="showTab(event, 's-shop')">⚔️ ЛАПКИ</button>
+            <button class="tab-btn tab-cosmos" onclick="showTab(event, 's-cosmos')">🌌 КОСМОС</button>
+            <button class="tab-btn" onclick="showTab(event, 's-kitchen')">🍼 КУХНЯ</button>
+            <button class="tab-btn" onclick="showTab(event, 's-spirit')">✨ ДУХ</button>
+            <button id="god-tab" class="tab-btn" style="display:none; color:gold; border-color:gold;" onclick="showTab(event, 's-god')">GOD</button>
         </div>
 
         <div id="s-shop" class="section active-section interactive">
-            <h3 style="color:var(--pink); margin-top:0;">Клубочки (Клики)</h3>
-            <div class="item" style="border-color: var(--pink)"><div><b>Лапка</b><p>+1 клик</p></div><button class="buy-btn" style="background:var(--pink)" onclick="buy('c', 1, 'p1', 1.2)">💰 <span id="p1">10</span></button></div>
-            <div class="item" style="border-color: var(--pink)"><div><b>Когтеточка</b><p>+10 клик</p></div><button class="buy-btn" style="background:var(--pink)" onclick="buy('c', 10, 'p10', 1.3)">💰 <span id="p10">150</span></button></div>
-            <div class="item" style="border-color: var(--pink)"><div><b>Игрушка-махалка</b><p>+100 клик</p></div><button class="buy-btn" style="background:var(--pink)" onclick="buy('c', 100, 'p100', 1.4)">💰 <span id="p100">2500</span></button></div>
-            <div class="item" style="border-color: var(--pink)"><div><b>Кошачья Мята</b><p>+1000 клик</p></div><button class="buy-btn" style="background:var(--pink)" onclick="buy('c', 1000, 'p1000', 1.5)">💰 <span id="p1000">30000</span></button></div>
-            
-            <h3 style="color:var(--blue)">Друзья (Автоклики)</h3>
-            <div class="item"><div><b>Котёнок</b><p>+1 в сек</p></div><button class="buy-btn" onclick="buy('a', 1, 'a1', 1.15)">💰 <span id="a1">25</span></button></div>
-            <div class="item"><div><b>Соседский Кот</b><p>+10 в сек</p></div><button class="buy-btn" onclick="buy('a', 10, 'a10', 1.2)">💰 <span id="a10">400</span></button></div>
-            <div class="item"><div><b>Банда Котов</b><p>+100 в сек</p></div><button class="buy-btn" onclick="buy('a', 100, 'a100', 1.25)">💰 <span id="a100">4500</span></button></div>
-            <div class="item"><div><b>Львиный Прайд</b><p>+1000 в сек</p></div><button class="buy-btn" onclick="buy('a', 1000, 'a1000', 1.35)">💰 <span id="a1000">50000</span></button></div>
+            <div class="item"><div><b>Армия Котят</b><p>Каждый котенок дает +1 клик</p></div><button class="buy-btn" onclick="buy('c', 1, 'p1', 1.2)">💰 <span id="p1">10</span></button></div>
+            <div class="item"><div><b>Кошачья Мята</b><p>Дает x2 клик навсегда</p></div><button class="buy-btn" onclick="buy('mult', 2, 'pmult', 10)">💰 <span id="pmult">15000</span></button></div>
+            <div class="item auto-item"><div><b>Кот-Робот</b><p>Автоматически нажимает +1/с</p></div><button class="buy-btn" onclick="buy('a', 1, 'a1', 1.15)">💰 <span id="a1">25</span></button></div>
+            <div class="item auto-item"><div><b>Квантовые Усы</b><p>Квантовый автоклик +10/с</p></div><button class="buy-btn" onclick="buy('a', 10, 'a10', 1.2)">💰 <span id="a10">400</span></button></div>
         </div>
 
         <div id="s-cosmos" class="section interactive">
-            <h3 style="color:var(--purple); margin-top:0;">Магические Силы</h3>
-            <p>Энергия: <b id="nrg">0</b>/500</p>
-            <div class="item"><div><b>Супер-Мяу</b><p>Сила тапа x2 (60с)</p></div><button class="buy-btn" style="background:var(--purple)" id="b-h" onclick="useAb('h')">ПУСК</button></div>
-            <div class="item"><div><b>Милая Воронка</b><p>Скидки и красота (60с)</p></div><button class="buy-btn" style="background:var(--purple)" id="b-b" onclick="useAb('b')">ПУСК</button></div>
-            <div class="item"><div><b>Звездопад</b><p>Падают монетки (60с)</p></div><button class="buy-btn" style="background:var(--purple)" id="b-s" onclick="useAb('s')">ПУСК</button></div>
-            <div class="item" style="border-color:var(--gold)"><div><b>Сладкий Метеорит</b><p>Мгновенно +10% к счету</p></div><button class="buy-btn" style="background:var(--gold); color:black;" id="b-m" onclick="useAb('m')">ПУСК</button></div>
+            <h2 style="color:var(--green)">🌌 Космическая Магия</h2>
+            <p style="font-size:12px;">Энергия (клики): <b id="nrg">0</b>/500</p>
+            
+            <div class="item cosmos-item"><div><b>Гипер-Тап</b><p>Сакура-усиление: x2 клик (60с)</p></div><button class="buy-btn" id="b-h" onclick="useAb('h')">ПУСК</button></div>
+            <div class="item cosmos-item"><div><b>Черная Дыра</b><p>Сакура-скидка: 20% шанс FREE (60с)</p></div><button class="buy-btn" id="b-b" onclick="useAb('b')">ПУСК</button></div>
+            <div class="item cosmos-item"><div><b>Звездопад</b><p>Звездная Сакура: Авто-монеты (60с)</p></div><button class="buy-btn" id="b-s" onclick="useAb('s')">ПУСК</button></div>
+            <div class="item cosmos-item"><div><b>Сакура-Блум</b><p>+1000 клик за каждые 100 автоклик</p></div><button class="buy-btn" id="b-sb" onclick="useAb('sb')">ПУСК</button></div>
+            <div class="item cosmos-item"><div><b>Сверхновая Мяу</b><p>Мгновенно +50% к текущему счету</p></div><button class="buy-btn" id="b-sm" onclick="useAb('sm')">ВЗРЫВ</button></div>
         </div>
 
         <div id="s-kitchen" class="section interactive">
-            <h3 style="color:#ffaa00; margin-top:0;">Кошачье Кафе</h3>
-            <div id="fed-ui" style="font-size: 20px; font-weight:bold; color: #ffaa00;">КОТИК ГОЛОДЕН 😿</div>
-            <button class="tab-btn" style="width:100%; margin-top:15px; border-color:#ffaa00;" onclick="feed()">НАКОРМИТЬ (100 🍖)</button>
-            <p style="font-size:12px; color:#888;">Сытый котик приносит в 2 раза больше монет и просит меньше денег за улучшения!</p>
+            <h2 style="color:var(--gold)">🍼 Кухня Рамэн</h2>
+            <div id="fed-ui" style="font-size: 20px; font-weight:bold; color: lime;">ГОЛОДЕН</div>
+            <button class="tab-btn" style="width:100%; border-color:lime; color:lime;" onclick="feed()">НАКОРМИТЬ (100 🍖)</button>
         </div>
 
         <div id="s-spirit" class="section interactive">
-            <h3 style="color:#ff66b2; margin-top:0;">Перерождение</h3>
-            <p>Сбрось прогресс за 100,000 монет, чтобы стать сильнее!</p>
-            <button id="pre-btn" class="tab-btn" style="width:100%; background:#ff66b2; color:white; border:none;" onclick="prestige()" disabled>СТАТЬ ЛЕГЕНДОЙ ✨</button>
-            <p style="font-size:12px; color:#888;">Награда: Золотой режим (10 сек), +1.0 множитель, 100 корма.</p>
+            <h2 style="color:var(--mana)">✨ Дух Сакуры</h2>
+            <button id="pre-btn" class="tab-btn" style="width:100%; background:var(--gold); color:black; border:none;" onclick="prestige()">ПЕРЕРОЖДЕНИЕ (100k)</button>
+            <p style="font-size:12px;">Ты получишь 100 корма и +1.0 к multipliers. Игру озарит Золотая Сакура!</p>
         </div>
 
         <div id="s-god" class="section interactive">
-            <h3 style="color:red; margin-top:0;">ПАНЕЛЬ СОЗДАТЕЛЯ</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <button class="buy-btn" style="background:red" onclick="coins+=1000000000; update()">+1 МЛРД</button>
-                <button class="buy-btn" style="background:red" onclick="food+=5000; update()">+5K КОРМА</button>
-                <button class="buy-btn" style="background:red" onclick="mult+=100; update()">MULT +100</button>
-                <button class="buy-btn" style="background:red" onclick="energy=500; update()">MAX ENERGY</button>
-            </div>
+            <h2 style="color:gold;">🛠 ПАНЕЛЬ ТВОРЦА</h2>
+            <button class="admin-btn" onclick="coins+=1000000000; update()">+1 МЛРД</button>
+            <button class="admin-btn" onclick="food+=5000; update()">+5K КОРМА</button>
+            <button class="admin-btn" onclick="mult+=100; update()">MULT x100</button>
+            <button class="admin-btn" onclick="energy=500; update()">MAX ENERGY</button>
         </div>
     </div>
 
     <script>
-        // БАЗОВЫЕ ПЕРЕМЕННЫЕ
-        let coins = 0, pwr = 1, auto = 0, mult = 1, food = 0, energy = 0;
+        let coins = 0, pwr = 1, auto = 0, mult = 1, food = 0, energy = 0, cat_mult = 1;
         let isFed = false, fedT = 0, abActive = null, abT = 0, isGolden = false;
         let lastTap = 0, tapCombo = 0;
-        
-        // Цены (Автокликеры дешевле!)
-        let pr = { p1:10, p10:150, p100:2500, p1000:30000, a1:25, a10:400, a100:4500, a1000:50000 };
+        let pr = { p1:10, a1:25, a10:400, pmult:15000 };
 
-        // КАНВАС ДЛЯ ЭФФЕКТОВ
         const canvas = document.getElementById('fxCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         let particles = [];
 
-        // МЫШКА (Новая механика)
+        // МЫШКА (Правка: теперь её видно)
         let mouseTimer = null;
-        let mouseX = -50;
+        let mouseX = -100;
         let mouseActive = false;
 
         function update() {
-            let m = mult * (isFed ? 2 : 1) * (isGolden ? 5 : 1);
+            let m = mult * (isFed ? 2 : 1) * (isGolden ? 10 : 1) * cat_mult;
             let curP = (abActive === 'h' ? pwr * 2 : pwr) * m;
-
+            
             document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
             document.getElementById('st-pwr').innerText = Math.floor(curP);
             document.getElementById('st-auto').innerText = Math.floor(auto * m);
             document.getElementById('st-food').innerText = food;
             document.getElementById('st-mult').innerText = 'x' + m.toFixed(1);
-            document.getElementById('nrg').innerText = energy;
+            document.getElementById('energy-val').innerText = energy;
             
             let sale = isFed ? 0.7 : 1;
             for(let key in pr) {
-                let el = document.getElementById(key);
-                if(el) el.innerText = Math.floor(pr[key] * sale).toLocaleString();
+                if(document.getElementById(key)) document.getElementById(key).innerText = Math.floor(pr[key] * sale).toLocaleString();
             }
 
             document.getElementById('blackHole').style.display = (abActive === 'b') ? 'block' : 'none';
-            document.getElementById('pre-btn').disabled = coins < 100000;
-            document.getElementById('fed-ui').innerHTML = isFed ? `СЫТ И ДОВОЛЕН 😻 (${fedT}с)` : "КОТИК ГОЛОДЕН 😿";
+            if(isGolden) document.getElementById('main-cat').classList.add('golden-mode');
+            else document.getElementById('main-cat').classList.remove('golden-mode');
             
-            ['h','b','s','m'].forEach(id => {
+            // Кнопки космоса
+            ['h','b','s','sb','sm'].forEach(id => {
                 let btn = document.getElementById('b-'+id);
                 if(btn) btn.disabled = (energy < 500 || abT > 0);
             });
-
-            if(isGolden) document.getElementById('main-cat').classList.add('golden-mode');
-            else document.getElementById('main-cat').classList.remove('golden-mode');
+            
+            document.getElementById('fed-ui').innerText = isFed ? "СЫТ: " + fedT + "с" : "ГОЛОДЕН";
         }
 
         function tap(e) {
@@ -234,39 +234,87 @@
             if(now - lastTap < 300) tapCombo++; else tapCombo = 0;
             lastTap = now;
 
-            let m = mult * (isFed ? 2 : 1) * (isGolden ? 5 : 1);
+            let m = mult * (isFed ? 2 : 1) * (isGolden ? 10 : 1) * cat_mult;
             let gain = (abActive === 'h' ? pwr * 2 : pwr) * m;
 
-            // МЕТЕОРИТНЫЙ ДОЖДЬ (ТЕПЕРЬ РОЗОВЫЙ)
+            // КРАСНЫЙ МЕТЕОРИТНЫЙ ДОЖДЬ
             if(tapCombo > 5) {
                 let bonus = (coins > 100) ? 30 : 10;
                 gain += bonus;
                 createParticle(e.clientX, 0, 'meteor');
             }
 
+            // Сакура-Блум бонус
+            if(abActive === 'sb') { gain += (Math.floor(auto/100)*1000); }
+
             coins += gain;
             if(energy < 500) energy++;
             
-            // Сердечко при клике
-            createParticle(e.clientX, e.clientY, 'heart');
+            // Лепестки Сакуры вместо сердечек
+            createParticle(e.clientX, e.clientY, 'sakura');
             if(abActive === 's') coins += gain * 0.5;
-
             update();
         }
 
-        // НОВАЯ МЕХАНИКА: Ловля мышки
+        function createParticle(x, y, type) {
+            if(type === 'sakura') {
+                particles.push({ x, y, vy: Math.random()*2+1, vx: Math.random()*2-1, age: 0, type: 'sakura', color: '#ffb7b2' });
+            } else if(type === 'meteor') {
+                particles.push({ x: Math.random()*canvas.width, y: -20, vy: 14, vx: 5, age: 0, type: 'meteor' });
+            } else if(type === 'star') {
+                particles.push({ x: Math.random()*canvas.width, y: -10, vy: 3, vx: Math.random()-0.5, age: 0, type: 'star' });
+            } else if(type === 'golden_sakura') {
+                particles.push({ x, y, vy: Math.random()*3+2, vx: Math.random()*4-2, age: 0, type: 'sakura', color: '#f1c40f' });
+            }
+        }
+
+        function buy(type, amt, id, grow) {
+            let cost = pr[id] * (isFed ? 0.7 : 1);
+            if(coins >= cost) {
+                coins -= cost;
+                if(type === 'c') pwr += amt; 
+                else if (type === 'a') auto += amt;
+                else if (type === 'mult') cat_mult *= amt;
+                pr[id] *= grow;
+                update();
+            }
+        }
+
+        function useAb(t) {
+            if(energy >= 500) {
+                if(t === 'sm') { coins += (coins * 0.5); energy = 0; }
+                else { energy = 0; abActive = t; abT = 60; }
+                update();
+            }
+        }
+
+        function prestige() {
+            if(coins >= 100000) {
+                coins = 0; pwr = 1; auto = 0; energy = 0; food += 100; mult += 1; cat_mult = 1;
+                pr = { p1:10, a1:25, a10:400, pmult:15000 };
+                isGolden = true;
+                // Золотой взрыв
+                for(let i=0; i<100; i++) createParticle(Math.random()*canvas.width, Math.random()*canvas.height, 'golden_sakura');
+                setTimeout(() => { isGolden = false; update(); }, 10000);
+                update();
+            }
+        }
+
+        function askGod() { if(prompt("ВВЕДИТЕ СЕКРЕТНЫЙ КОД:") === "CATGOD2026") document.getElementById('god-tab').style.display = 'inline-block'; }
+
+        // Починил мышку
         function spawnMouse() {
             if(mouseActive) return;
             mouseActive = true;
-            mouseX = -50;
+            mouseX = -100;
             let mouseEl = document.getElementById('mouse-event');
             mouseEl.style.display = 'block';
-            mouseEl.style.top = Math.random() * 60 + 20 + '%'; // Случайная высота
+            mouseEl.style.top = Math.random() * 50 + 25 + '%';
 
             mouseTimer = setInterval(() => {
-                mouseX += 5; // Скорость мышки
+                mouseX += 8;
                 mouseEl.style.left = mouseX + 'px';
-                if(mouseX > window.innerWidth) {
+                if(mouseX > window.innerWidth + 100) {
                     clearInterval(mouseTimer);
                     mouseEl.style.display = 'none';
                     mouseActive = false;
@@ -279,79 +327,14 @@
             clearInterval(mouseTimer);
             document.getElementById('mouse-event').style.display = 'none';
             mouseActive = false;
-
-            // Награда за поимку мыши: огромный буст монет!
-            let reward = (auto * 50) + (pwr * 100) + 100;
-            coins += reward;
-            
-            // Салют из сердечек
-            for(let i=0; i<15; i++) createParticle(mouseX, parseInt(document.getElementById('mouse-event').style.top), 'heart');
+            coins += (auto * 100) + 1000;
+            // Всплеск сакуры
+            for(let i=0; i<10; i++) createParticle(mouseX, parseInt(document.getElementById('mouse-event').style.top), 'sakura');
             update();
         }
+        setInterval(spawnMouse, 25000); // Бегает раз в 25 сек
 
-        // Запускаем мышку случайным образом каждые 15-30 секунд
-        setInterval(() => {
-            if(Math.random() > 0.5) spawnMouse();
-        }, 20000);
-
-
-        function createParticle(x, y, type) {
-            if(type === 'heart') {
-                particles.push({ x, y, vy: -3, vx: Math.random()*2-1, age: 0, type: 'heart' });
-            } else if(type === 'meteor') {
-                particles.push({ x: Math.random()*canvas.width, y: -20, vy: 10, vx: 3, age: 0, type: 'meteor' });
-            } else if(type === 'star') {
-                particles.push({ x: Math.random()*canvas.width, y: -10, vy: 4, vx: Math.random()-0.5, age: 0, type: 'star' });
-            }
-        }
-
-        function buy(type, amt, id, grow) {
-            let cost = pr[id] * (isFed ? 0.7 : 1);
-            let free = (abActive === 'b' && Math.random() < 0.2);
-            if(coins >= cost || free) {
-                if(!free) coins -= cost;
-                if(type === 'c') pwr += amt; else auto += amt;
-                pr[id] *= grow;
-                update();
-            }
-        }
-
-        function useAb(t) {
-            if(energy >= 500) {
-                if(t === 'm') { coins += (coins * 0.1); energy = 0; }
-                else { energy = 0; abActive = t; abT = 60; }
-                update();
-            }
-        }
-
-        function feed() { 
-            if(food >= 100 && !isFed) { 
-                food -= 100; isFed = true; fedT = 60; 
-                for(let i=0; i<20; i++) createParticle(window.innerWidth/2, window.innerHeight/2, 'heart');
-                update(); 
-            } 
-        }
-
-        function prestige() {
-            if(coins >= 100000) {
-                coins = 0; pwr = 1; auto = 0; energy = 0; food += 100; mult += 1;
-                pr = { p1:10, p10:150, p100:2500, p1000:30000, a1:25, a10:400, a100:4500, a1000:50000 };
-                isGolden = true;
-                setTimeout(() => { isGolden = false; update(); }, 10000);
-                update();
-            }
-        }
-
-        function openGod() { if(prompt("ПАРОЛЬ:") === "CATGOD2026") document.getElementById('god-tab').style.display = 'inline-block'; }
-
-        function showTab(e, id) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active-section');
-            e.currentTarget.classList.add('active');
-        }
-
-        // АНИМАЦИЯ ЧАСТИЦ
+        // АНИМАЦИЯ
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
@@ -360,30 +343,40 @@
             particles.forEach((p, i) => {
                 p.age++; p.x += p.vx; p.y += p.vy;
                 
-                if(p.type === 'heart') {
-                    ctx.font = "20px Arial";
-                    ctx.fillStyle = `rgba(255, 105, 180, ${1 - p.age/50})`;
-                    ctx.fillText("💖", p.x, p.y);
+                if(p.type === 'sakura') {
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    // Рисуем лепесток (примитивный овал)
+                    ctx.ellipse(p.x, p.y, 4, 6, Math.random()*360, 0, 7);
+                    ctx.fill();
+                    ctx.globalAlpha = 1 - p.age/70;
                 } else if(p.type === 'meteor') {
-                    ctx.fillStyle = '#ffb7b2'; // Пастельно-розовый метеор
-                    ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 7); ctx.fill();
-                    ctx.shadowBlur = 15; ctx.shadowColor = "#ff66b2";
+                    ctx.fillStyle = 'red';
+                    ctx.beginPath(); ctx.arc(p.x, p.y, 7, 0, 7); ctx.fill();
+                    ctx.shadowBlur = 15; ctx.shadowColor = "orange";
                 } else if(p.type === 'star') {
-                    ctx.fillStyle = '#ffdf00';
-                    ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, 7); ctx.fill();
+                    ctx.fillStyle = 'white';
+                    ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, 7); ctx.fill();
                 }
 
-                if(p.age > 70 && p.type !== 'star' && p.type !== 'meteor') particles.splice(i, 1);
-                if(p.y > canvas.height) particles.splice(i, 1);
+                if(p.age > 70 || p.y > canvas.height) particles.splice(i, 1);
+                ctx.globalAlpha = 1; ctx.shadowBlur = 0;
             });
             requestAnimationFrame(animate);
         }
 
+        function showTab(e, id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active-section');
+            e.currentTarget.classList.add('active');
+        }
+
         setInterval(() => {
-            let m = mult * (isFed ? 2 : 1) * (isGolden ? 5 : 1);
+            let m = mult * (isFed ? 2 : 1) * (isGolden ? 10 : 1) * cat_mult;
             coins += (auto * m);
-            if(fedT > 0) { fedT--; if(fedT <= 0) isFed = false; }
-            if(abT > 0) { abT--; if(abT <= 0) abActive = null; }
+            if(fedT > 0) fedT--; else isFed = false;
+            if(abT > 0) abT--; else abActive = null;
             update();
         }, 1000);
 
